@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/NerdBow/GrindersTUI/internal/model"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -12,7 +13,7 @@ type App struct {
 }
 
 func initApp() App {
-	return App{}
+	return App{currentState: model.HomeModelInit()}
 }
 
 func (m App) Init() tea.Cmd {
@@ -29,7 +30,7 @@ func (m App) View() string {
 }
 
 func main() {
-	p := tea.NewProgram(initApp())
+	p := tea.NewProgram(initApp(), tea.WithAltScreen())
 	_, err := p.Run()
 	if err != nil {
 		fmt.Printf("There is an error: %v", err)
