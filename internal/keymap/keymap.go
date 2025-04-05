@@ -5,10 +5,11 @@ import (
 )
 
 type KeyBindings struct {
-	Up     key.Binding
-	Down   key.Binding
-	Select key.Binding
-	Exit   key.Binding
+	Up          key.Binding
+	Down        key.Binding
+	Select      key.Binding
+	Exit        key.Binding
+	ChangeFocus key.Binding
 }
 
 var (
@@ -31,6 +32,11 @@ var (
 		Exit: key.NewBinding(
 			key.WithKeys("esc", "q", "ctrl+c"),
 			key.WithHelp("esc/q/ctrl+c", "quit"),
+		),
+
+		ChangeFocus: key.NewBinding(
+			key.WithKeys("tab"),
+			key.WithHelp("tab", "change focused section"),
 		),
 	}
 )
