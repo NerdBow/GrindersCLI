@@ -1,10 +1,18 @@
 package model
 
 import (
-	"github.com/charmbracelet/bubbles/cursor"
+	"strings"
+
+	"github.com/NerdBow/GrindersTUI/internal/keymap"
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"strings"
+	"github.com/charmbracelet/lipgloss"
+)
+
+var (
+	textInputFocusedStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff88aa"))
+	textInputUnfocusedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#ffffff"))
 )
 
 type SignInModel struct {
