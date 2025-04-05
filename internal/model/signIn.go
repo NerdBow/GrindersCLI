@@ -90,5 +90,15 @@ func (m SignInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m SignInModel) View() string {
 	var b strings.Builder
-	return ""
+	for _, t := range m.inputs {
+		b.WriteString(t.View())
+		b.WriteRune('\n')
+	}
+	logInChoice := textInputUnfocusedStyle.Render("Log In")
+	if m.focusIndex == 2 {
+		logInChoice = textInputFocusedStyle.Render("Log In")
+	}
+
+	b.WriteString(logInChoice)
+	return b.String()
 }
