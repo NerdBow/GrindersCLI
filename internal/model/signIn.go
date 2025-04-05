@@ -16,9 +16,8 @@ var (
 )
 
 type SignInModel struct {
-	inputs      []textinput.Model
-	cursorIndex uint8
-	cursor      cursor.Mode
+	inputs     []textinput.Model
+	focusIndex int
 }
 
 func SignInModelInit() SignInModel {
@@ -28,6 +27,8 @@ func SignInModelInit() SignInModel {
 	usernameTextInput := textinput.New()
 	usernameTextInput.CharLimit = 64
 	usernameTextInput.Placeholder = "Username"
+	usernameTextInput.PromptStyle = textInputFocusedStyle
+	usernameTextInput.TextStyle = textInputFocusedStyle
 	usernameTextInput.Focus()
 
 	m.inputs[0] = usernameTextInput
@@ -44,7 +45,7 @@ func SignInModelInit() SignInModel {
 }
 
 func (m SignInModel) Init() tea.Cmd {
-	return nil
+	return textinput.Blink
 }
 
 func (m SignInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
