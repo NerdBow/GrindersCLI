@@ -24,8 +24,9 @@ var (
 )
 
 type SignInModel struct {
-	inputs     []textinput.Model
-	focusIndex int
+	inputs       []textinput.Model
+	focusIndex   int
+	errorMessage string
 }
 
 type UserTokenMsg struct {
@@ -93,7 +94,15 @@ func (m SignInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, keymap.VimBinding.Exit):
 			return m, tea.Quit
 		}
-
+	case SystemErrorMsg:
+		m.errorMessage = string(msg)
+		return m, nil
+	case SignInErrorMsg:
+		m.errorMessage = msg.Message
+		return m, nil
+	case UserTokenMsg:
+		m.errorMessage = "Sign In Successful"
+		return m, nil
 	}
 	cmds := make([]tea.Cmd, len(m.inputs))
 
@@ -111,12 +120,16 @@ func (m SignInModel) View() string {
 		b.WriteString(t.View())
 		b.WriteRune('\n')
 	}
-	logInChoice := textInputUnfocusedStyle.Render("Log In")
-	if m.focusIndex == 2 {
-		logInChoice = textInputFocusedStyle.Render("Log In")
+	logInChoice := textInputUnfocusedStyle.Render("Sign In")
+	if m.focusIndex == SignInButton {
+		logInChoice = textInputFocusedStyle.Render("Sign In")
 	}
-
 	b.WriteString(logInChoice)
+
+	b.WriteRune('\n')
+	b.WriteRune('\n')
+	b.WriteString(textInputFocusedStyle.Render(m.errorMessage))
+
 	return b.String()
 }
 func GetToken(username string, password string) tea.Cmd {
