@@ -20,7 +20,16 @@ type SignInModel struct {
 	focusIndex int
 }
 
-func SignInModelInit() SignInModel {
+type UserTokenMsg struct {
+	Token string `json:"token"`
+}
+
+type SignInErrorMsg struct {
+	Message string `json:"message"`
+}
+
+type SystemErrorMsg string
+
 	m := SignInModel{
 		inputs: make([]textinput.Model, 2),
 	}
@@ -101,4 +110,60 @@ func (m SignInModel) View() string {
 
 	b.WriteString(logInChoice)
 	return b.String()
+}
+func GetToken(username string, password string) tea.Cmd {
+	return func() tea.Msg {
+		url := os.Getenv("URL")
+		url = "http://localhost:8080/user/signin"
+		request := struct {
+			Username string `json:"username"`
+			Password string `json:"password"`
+		}{username, password}
+
+		jsonBytes, err := json.Marshal(request)
+
+		if err != nil {
+			return SystemErrorMsg(err.Error())
+		}
+
+		r, err := http.Post(url, "application/json", bytes.NewBuffer(jsonBytes))
+
+		if err != nil {
+			return SystemErrorMsg(err.Error())
+		}
+
+		var msg UserTokenMsg
+
+		switch r.StatusCode {
+		case http.StatusOK:
+			jsonBytes, err = io.ReadAll(r.Body)
+			if err != nil {
+				return SystemErrorMsg(err.Error())
+			}
+
+			err = json.Unmarshal(jsonBytes, &msg)
+
+			if err != nil {
+				return SystemErrorMsg(err.Error())
+			}
+
+			return msg
+
+		default:
+			jsonBytes, err = io.ReadAll(r.Body)
+			if err != nil {
+				return SystemErrorMsg(err.Error())
+			}
+
+			var errMsg SignInErrorMsg
+
+			err = json.Unmarshal(jsonBytes, &errMsg)
+
+			if err != nil {
+				return SystemErrorMsg(err.Error())
+			}
+
+			return errMsg
+		}
+	}
 }
