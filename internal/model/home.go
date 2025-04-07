@@ -9,14 +9,14 @@ import (
 )
 
 type HomeModel struct {
-	choices []string
-	cursor  int
+	choices    []string
+	focusIndex int
 }
 
 func HomeModelInit() HomeModel {
 	return HomeModel{
-		choices: []string{"Create Log", "View Log(s)", "Edit Log", "Delete Log", "Sign Out"},
-		cursor:  0,
+		choices:    []string{"Create Log", "View Log(s)", "Edit Log", "Delete Log", "Sign Out"},
+		focusIndex: 0,
 	}
 }
 
@@ -29,14 +29,10 @@ func (m HomeModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, keymap.VimBinding.Up):
-			if m.cursor > 0 {
-				m.cursor--
-			}
+			m.focusIndex = (m.focusIndex - 1) % len(m.choices)
 			return m, nil
 		case key.Matches(msg, keymap.VimBinding.Down):
-			if m.cursor < len(m.choices)-1 {
-				m.cursor++
-			}
+			m.focusIndex = (m.focusIndex + 1) % len(m.choices)
 			return m, nil
 		case key.Matches(msg, keymap.VimBinding.Exit):
 			return m, tea.Quit
@@ -52,7 +48,7 @@ func (m HomeModel) View() string {
 	var b strings.Builder
 
 	for i := range m.choices {
-		if i == m.cursor {
+		if i == m.focusIndex {
 			b.WriteString("> ")
 		}
 
