@@ -13,18 +13,18 @@ type HomeModel struct {
 	focusIndex int
 }
 
-func HomeModelInit() HomeModel {
-	return HomeModel{
+func HomeModelInit() *HomeModel {
+	return &HomeModel{
 		choices:    []string{"Create Log", "View Log(s)", "Edit Log", "Delete Log", "Sign Out"},
 		focusIndex: 0,
 	}
 }
 
-func (m HomeModel) Init() tea.Cmd {
+func (m *HomeModel) Init() tea.Cmd {
 	return nil
 }
 
-func (m HomeModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *HomeModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
@@ -44,7 +44,7 @@ func (m HomeModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m HomeModel) View() string {
+func (m *HomeModel) View() string {
 	var b strings.Builder
 
 	for i := range m.choices {
