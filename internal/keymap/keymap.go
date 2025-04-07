@@ -25,7 +25,7 @@ var (
 		),
 
 		Select: key.NewBinding(
-			key.WithKeys("space", "enter"),
+			key.WithKeys(" ", "enter"),
 			key.WithHelp("space/enter", "select"),
 		),
 
