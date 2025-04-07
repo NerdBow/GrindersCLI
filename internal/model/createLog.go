@@ -54,7 +54,7 @@ func CreateLogModelInit() *CreateLogModel {
 }
 
 func (m *CreateLogModel) Init() tea.Cmd {
-	return nil
+	return textinput.Blink
 }
 
 func (m *CreateLogModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
