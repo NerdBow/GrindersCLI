@@ -31,7 +31,20 @@ func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case model.UserTokenMsg:
 		m.token = msg.Token
+		m.signInModel = model.SignInModelInit()
 		m.currentState = m.homeModel
+	case model.SignOutMsg:
+		m.token = ""
+		m.homeModel = model.HomeModelInit()
+		m.currentState = m.signInModel
+	case model.HomeModelSwitch:
+		switch msg {
+		case model.CreateLogSwitch:
+		case model.ViewLogSwitch:
+		case model.EditLogSwitch:
+		case model.DeleteLogSwitch:
+		}
+
 	}
 	_, cmd := m.currentState.Update(msg)
 	return m, cmd
