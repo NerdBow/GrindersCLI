@@ -64,5 +64,17 @@ func (m *CreateLogModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *CreateLogModel) View() string {
-	return ""
+	var b strings.Builder
+	for i := range m.inputs {
+		b.WriteString(m.inputs[i].View())
+		b.WriteRune('\n')
+	}
+	confirmChoice := textInputUnfocusedStyle.Render("Confirm")
+	if m.focusIndex == ConfirmButton {
+		confirmChoice = textInputFocusedStyle.Render("Confirm")
+	}
+
+	b.WriteString(confirmChoice)
+
+	return b.String()
 }
