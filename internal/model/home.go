@@ -8,6 +8,23 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+type SignOutMsg struct{}
+
+type HomeModelSwitch uint8
+
+const (
+	CreateLogField uint8 = iota
+	ViewLogsField
+	EditLogField
+	DeleteLogField
+	SignOutField
+
+	CreateLogSwitch HomeModelSwitch = iota
+	ViewLogSwitch
+	EditLogSwitch
+	DeleteLogSwitch
+)
+
 type HomeModel struct {
 	choices    []string
 	focusIndex int
@@ -37,6 +54,18 @@ func (m *HomeModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, keymap.VimBinding.Exit):
 			return m, tea.Quit
 		case key.Matches(msg, keymap.VimBinding.Select):
+			switch uint8(m.focusIndex) {
+			case CreateLogField:
+				return m, func() tea.Msg { return CreateLogSwitch }
+			case ViewLogsField:
+				return m, func() tea.Msg { return ViewLogSwitch }
+			case EditLogField:
+				return m, func() tea.Msg { return EditLogSwitch }
+			case DeleteLogField:
+				return m, func() tea.Msg { return DeleteLogSwitch }
+			case SignOutField:
+				return m, func() tea.Msg { return SignOutMsg{} }
+			}
 			return m, nil
 		}
 
