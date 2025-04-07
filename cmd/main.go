@@ -9,10 +9,11 @@ import (
 )
 
 type App struct {
-	currentState tea.Model
-	homeModel    *model.HomeModel
-	signInModel  *model.SignInModel
-	token        string
+	currentState   tea.Model
+	homeModel      *model.HomeModel
+	signInModel    *model.SignInModel
+	createLogModel *model.CreateLogModel
+	token          string
 }
 
 func initApp() *App {
@@ -40,9 +41,17 @@ func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case model.HomeModelSwitch:
 		switch msg {
 		case model.CreateLogSwitch:
+			m.createLogModel = model.CreateLogModelInit()
+			m.currentState = m.createLogModel
 		case model.ViewLogSwitch:
 		case model.EditLogSwitch:
 		case model.DeleteLogSwitch:
+		}
+	case model.CreateLogModelSwitch:
+		switch msg {
+		case model.HomeSwitch:
+			m.homeModel = model.HomeModelInit()
+			m.currentState = m.homeModel
 		}
 
 	}
