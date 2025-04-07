@@ -29,7 +29,7 @@ func (m *HomeModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, keymap.VimBinding.Up):
-			m.focusIndex = (m.focusIndex - 1) % len(m.choices)
+			m.focusIndex = ((m.focusIndex-1)%len(m.choices) + len(m.choices)) % len(m.choices)
 			return m, nil
 		case key.Matches(msg, keymap.VimBinding.Down):
 			m.focusIndex = (m.focusIndex + 1) % len(m.choices)
