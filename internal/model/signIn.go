@@ -39,6 +39,7 @@ type SignInErrorMsg struct {
 
 type SystemErrorMsg string
 
+func SignInModelInit() *SignInModel {
 	m := SignInModel{
 		inputs: make([]textinput.Model, 2),
 	}
@@ -59,14 +60,14 @@ type SystemErrorMsg string
 
 	m.inputs[PasswordField] = passwordTextInput
 
-	return m
+	return &m
 }
 
-func (m SignInModel) Init() tea.Cmd {
+func (m *SignInModel) Init() tea.Cmd {
 	return textinput.Blink
 }
 
-func (m SignInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *SignInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
@@ -114,7 +115,7 @@ func (m SignInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 }
 
-func (m SignInModel) View() string {
+func (m *SignInModel) View() string {
 	var b strings.Builder
 	for _, t := range m.inputs {
 		b.WriteString(t.View())
@@ -132,6 +133,7 @@ func (m SignInModel) View() string {
 
 	return b.String()
 }
+
 func GetToken(username string, password string) tea.Cmd {
 	return func() tea.Msg {
 		url := os.Getenv("URL")
