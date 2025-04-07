@@ -34,14 +34,16 @@ func CreateLogModelInit() *CreateLogModel {
 	m := CreateLogModel{
 		inputs: make([]textinput.Model, 3),
 	}
-	for i := range 3 {
+	for i := range m.inputs {
 		t := textinput.New()
 		t.CharLimit = 100
-		t.PromptStyle = textInputFocusedStyle
-		t.TextStyle = textInputFocusedStyle
+		t.PromptStyle = textInputUnfocusedStyle
+		t.TextStyle = textInputUnfocusedStyle
 		switch uint8(i) {
 		case NameField:
 			t.Placeholder = "Name"
+			t.PromptStyle = textInputFocusedStyle
+			t.TextStyle = textInputFocusedStyle
 			t.Focus()
 		case CategoryField:
 			t.Placeholder = "Category"
