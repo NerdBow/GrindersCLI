@@ -10,22 +10,34 @@ import (
 
 type App struct {
 	currentState tea.Model
+	homeModel    *model.HomeModel
+	signInModel  *model.SignInModel
+	token        string
 }
 
-func initApp() App {
-	return App{currentState: model.HomeModelInit()}
+func initApp() *App {
+	return &App{
+		homeModel:   model.HomeModelInit(),
+		signInModel: model.SignInModelInit(),
+	}
 }
 
-func (m App) Init() tea.Cmd {
+func (m *App) Init() tea.Cmd {
+	m.currentState = m.signInModel
 	return nil
 }
 
-func (m App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	model, cmd := m.currentState.Update(msg)
-	return model, cmd
+func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case model.UserTokenMsg:
+		m.token = msg.Token
+		m.currentState = m.homeModel
+	}
+	_, cmd := m.currentState.Update(msg)
+	return m, cmd
 }
 
-func (m App) View() string {
+func (m *App) View() string {
 	return m.currentState.View()
 }
 
