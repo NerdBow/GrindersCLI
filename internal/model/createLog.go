@@ -61,7 +61,39 @@ func (m *CreateLogModel) Init() tea.Cmd {
 }
 
 func (m *CreateLogModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	return m, nil
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch {
+		case key.Matches(msg, keymap.VimBinding.ChangeFocus):
+			m.focusIndex = (m.focusIndex + 1) % 4
+
+			cmds := make([]tea.Cmd, len(m.inputs))
+			for i := range m.inputs {
+				if i == m.focusIndex {
+					cmds[i] = m.inputs[i].Focus()
+					m.inputs[i].PromptStyle = textInputFocusedStyle
+					m.inputs[i].TextStyle = textInputFocusedStyle
+					continue
+				}
+				m.inputs[i].Blur()
+				m.inputs[i].PromptStyle = textInputUnfocusedStyle
+				m.inputs[i].TextStyle = textInputUnfocusedStyle
+			}
+			return m, tea.Batch(cmds...)
+		case key.Matches(msg, keymap.VimBinding.Exit):
+			return m, func() tea.Msg { return HomeSwitch }
+		case key.Matches(msg, keymap.VimBinding.Select):
+			switch uint8(m.focusIndex) {
+			case ConfirmButton:
+				return m, func() tea.Msg { return TimerSwitch }
+			}
+		}
+	}
+	cmds := make([]tea.Cmd, len(m.inputs))
+	for i := range m.inputs {
+		m.inputs[i], cmds[i] = m.inputs[i].Update(msg)
+	}
+	return m, tea.Batch(cmds...)
 }
 
 func (m *CreateLogModel) View() string {
