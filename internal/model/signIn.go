@@ -1,6 +1,11 @@
 package model
 
 import (
+	"bytes"
+	"encoding/json"
+	"io"
+	"net/http"
+	"os"
 	"strings"
 
 	"github.com/NerdBow/GrindersTUI/internal/keymap"
@@ -13,6 +18,9 @@ import (
 var (
 	textInputFocusedStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff88aa"))
 	textInputUnfocusedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#ffffff"))
+	UsernameField           = 0
+	PasswordField           = 1
+	SignInButton            = 2
 )
 
 type SignInModel struct {
@@ -40,7 +48,7 @@ type SystemErrorMsg string
 	usernameTextInput.TextStyle = textInputFocusedStyle
 	usernameTextInput.Focus()
 
-	m.inputs[0] = usernameTextInput
+	m.inputs[UsernameField] = usernameTextInput
 
 	passwordTextInput := textinput.New()
 	passwordTextInput.CharLimit = 64
@@ -48,7 +56,7 @@ type SystemErrorMsg string
 	passwordTextInput.EchoMode = textinput.EchoPassword
 	passwordTextInput.EchoCharacter = '•'
 
-	m.inputs[1] = passwordTextInput
+	m.inputs[PasswordField] = passwordTextInput
 
 	return m
 }
@@ -79,8 +87,8 @@ func (m SignInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return m, tea.Batch(cmds...)
 		case key.Matches(msg, keymap.VimBinding.Select):
-			if m.focusIndex == 2 {
-				return m, nil
+			if m.focusIndex == SignInButton {
+				return m, GetToken(m.inputs[UsernameField].Value(), m.inputs[PasswordField].Value())
 			}
 		case key.Matches(msg, keymap.VimBinding.Exit):
 			return m, tea.Quit
