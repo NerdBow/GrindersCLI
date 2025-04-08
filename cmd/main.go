@@ -52,6 +52,7 @@ func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case model.HomeSwitch:
 			m.homeModel = model.HomeModelInit()
 			m.currentState = m.homeModel
+		case model.TimerSwitch:
 		}
 
 	}
