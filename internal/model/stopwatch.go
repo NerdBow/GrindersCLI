@@ -17,6 +17,12 @@ type StopwatchModel struct {
 	sw         stopwatch.Model
 	focusIndex int
 }
+
+func StopwatchModelInit() *StopwatchModel {
+	return &StopwatchModel{
+		sw:         stopwatch.New(),
+		focusIndex: 0,
+	}
 }
 
 func (m *StopwatchModel) Init() tea.Cmd {
