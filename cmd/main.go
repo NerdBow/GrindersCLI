@@ -13,6 +13,7 @@ type App struct {
 	homeModel      *model.HomeModel
 	signInModel    *model.SignInModel
 	createLogModel *model.CreateLogModel
+	stopwatchModel *model.StopwatchModel
 	token          string
 }
 
@@ -53,6 +54,8 @@ func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.homeModel = model.HomeModelInit()
 			m.currentState = m.homeModel
 		case model.TimerSwitch:
+			m.stopwatchModel = model.StopwatchModelInit()
+			m.currentState = m.stopwatchModel
 		}
 
 	}
