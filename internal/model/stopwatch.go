@@ -1,11 +1,14 @@
 package model
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/NerdBow/GrindersTUI/internal/keymap"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/stopwatch"
 	tea "github.com/charmbracelet/bubbletea"
-	"strings"
+)
 
 const (
 	TimerField = iota
