@@ -27,8 +27,9 @@ const (
 )
 
 type CreateLogModel struct {
-	focusIndex int
-	inputs     []textinput.Model
+	focusIndex   int
+	inputs       []textinput.Model
+	errorMessage string
 }
 
 func CreateLogModelInit() *CreateLogModel {
@@ -85,6 +86,10 @@ func (m *CreateLogModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, keymap.VimBinding.Select):
 			switch uint8(m.focusIndex) {
 			case ConfirmButton:
+				if m.IsInputsEmpty() {
+					m.errorMessage = "There can be no empty fields!"
+					return m, nil
+				}
 				return m, func() tea.Msg { return TimerSwitch }
 			}
 		}
@@ -108,6 +113,10 @@ func (m *CreateLogModel) View() string {
 	}
 
 	b.WriteString(confirmChoice)
+	b.WriteRune('\n')
+	b.WriteRune('\n')
+
+	b.WriteString(textInputFocusedStyle.Render(m.errorMessage))
 
 	return b.String()
 }
