@@ -111,3 +111,12 @@ func (m *CreateLogModel) View() string {
 
 	return b.String()
 }
+
+func (m *CreateLogModel) IsInputsEmpty() bool {
+	for _, t := range m.inputs {
+		if t.Value() == "" {
+			return true
+		}
+	}
+	return false
+}
