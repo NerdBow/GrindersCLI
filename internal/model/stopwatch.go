@@ -30,7 +30,30 @@ func (m *StopwatchModel) Init() tea.Cmd {
 }
 
 func (m *StopwatchModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	return m, nil
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch {
+		case key.Matches(msg, keymap.VimBinding.ChangeFocus):
+			m.focusIndex = (m.focusIndex + 1) % 3
+		case key.Matches(msg, keymap.VimBinding.Select):
+			switch m.focusIndex {
+			case TimerField:
+				cmd := m.sw.Toggle()
+				return m, cmd
+			case RestField:
+				return m, nil //TODO: this is for later
+			case FinishLogField:
+				cmds := make([]tea.Cmd, 2)
+				cmds[0] = m.sw.Stop()
+				return m, tea.Batch(cmds...)
+			}
+		case key.Matches(msg, keymap.VimBinding.Exit):
+			return nil, tea.Quit
+		}
+	}
+	var cmd tea.Cmd
+	m.sw, cmd = m.sw.Update(msg)
+	return m, cmd
 }
 
 func (m *StopwatchModel) View() string {
