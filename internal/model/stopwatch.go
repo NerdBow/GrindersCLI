@@ -20,15 +20,20 @@ const (
 	TimerField = iota
 	RestField
 	FinishLogField
+	PreviousSwitch StopwatchModelSwitch = iota
+	ReSignInSwitch
 )
 
+type StopwatchModelSwitch uint8
 
 type PostLogErrorMsg struct {
 	Message string `json:"message"`
 }
+
 type LogIdMsg struct {
 	Id int64 `json:"id"`
 }
+
 type StopwatchModel struct {
 	sw          stopwatch.Model
 	focusIndex  int
@@ -70,11 +75,16 @@ func (m *StopwatchModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case FinishLogField:
 				cmds := make([]tea.Cmd, 2)
 				cmds[0] = m.sw.Stop()
+				cmds[1] = m.postLog()
 				return m, tea.Batch(cmds...)
 			}
 		case key.Matches(msg, keymap.VimBinding.Exit):
-			return nil, tea.Quit
+			return nil, func() tea.Msg { return PreviousSwitch }
 		}
+	case SystemErrorMsg:
+		m.status = string(msg)
+	case LogIdMsg:
+		m.status = fmt.Sprintf("Successfully created a log with id: %d", msg.Id)
 	}
 	var cmd tea.Cmd
 	m.sw, cmd = m.sw.Update(msg)
@@ -108,6 +118,11 @@ func (m *StopwatchModel) View() string {
 		confirmText = textInputFocusedStyle.Render("Finish Log")
 	}
 	b.WriteString(confirmText)
+
+	b.WriteRune('\n')
+	b.WriteRune('\n')
+
+	b.WriteString(textInputFocusedStyle.Render(m.status))
 	return b.String()
 }
 
