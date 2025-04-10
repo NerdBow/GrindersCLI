@@ -1,8 +1,14 @@
 package model
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"os"
 	"strings"
+	"time"
 
 	"github.com/NerdBow/GrindersTUI/internal/keymap"
 	"github.com/charmbracelet/bubbles/key"
@@ -16,15 +22,31 @@ const (
 	FinishLogField
 )
 
+
+type PostLogErrorMsg struct {
+	Message string `json:"message"`
+}
+type LogIdMsg struct {
+	Id int64 `json:"id"`
+}
 type StopwatchModel struct {
-	sw         stopwatch.Model
-	focusIndex int
+	sw          stopwatch.Model
+	focusIndex  int
+	logName     string
+	logCategory string
+	logGoal     string
+	token       string
+	status      string
 }
 
-func StopwatchModelInit() *StopwatchModel {
+func StopwatchModelInit(logName string, logCategory string, logGoal string, token string) *StopwatchModel {
 	return &StopwatchModel{
-		sw:         stopwatch.New(),
-		focusIndex: 0,
+		sw:          stopwatch.New(),
+		focusIndex:  0,
+		logName:     logName,
+		logCategory: logCategory,
+		logGoal:     logGoal,
+		token:       token,
 	}
 }
 
@@ -87,4 +109,70 @@ func (m *StopwatchModel) View() string {
 	}
 	b.WriteString(confirmText)
 	return b.String()
+}
+
+func (m *StopwatchModel) postLog() tea.Cmd {
+	return func() tea.Msg {
+		url := os.Getenv("URL")
+
+		url = "http://localhost:8080/user/log"
+
+		log := struct {
+			Date     int64  `json:"date"`
+			Duration int64  `json:"duration"`
+			Name     string `json:"name"`
+			Category string `json:"category"`
+			Goal     string `json:"goal"`
+		}{
+			time.Now().Unix(),
+			int64(m.sw.Elapsed().Seconds()),
+			m.logName,
+			m.logCategory,
+			m.logGoal,
+		}
+
+		jsonBytes, err := json.Marshal(log)
+
+		if err != nil {
+			return SystemErrorMsg(err.Error())
+		}
+
+		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonBytes))
+		req.Header.Add("Authorization", "Bearer "+m.token)
+		res, err := http.DefaultClient.Do(req)
+
+		if err != nil {
+			return SystemErrorMsg(err.Error())
+		}
+
+		var msg LogIdMsg
+
+		switch res.StatusCode {
+		case http.StatusOK:
+			jsonBytes, err = io.ReadAll(res.Body)
+			if err != nil {
+				return SystemErrorMsg(err.Error())
+			}
+			err = json.Unmarshal(jsonBytes, &msg)
+
+			if err != nil {
+				return SystemErrorMsg(err.Error())
+			}
+			return msg
+		default:
+			jsonBytes, err = io.ReadAll(res.Body)
+			if err != nil {
+				return SystemErrorMsg(err.Error())
+			}
+
+			var errMsg PostLogErrorMsg
+			err = json.Unmarshal(jsonBytes, &errMsg)
+
+			if err != nil {
+				return SystemErrorMsg(err.Error())
+			}
+
+			return errMsg
+		}
+	}
 }
