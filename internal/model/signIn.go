@@ -90,7 +90,7 @@ func (m *SignInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Batch(cmds...)
 		case key.Matches(msg, keymap.VimBinding.Select):
 			if m.focusIndex == SignInButton {
-				return m, GetToken(m.inputs[UsernameField].Value(), m.inputs[PasswordField].Value())
+				return m, m.GetToken(m.inputs[UsernameField].Value(), m.inputs[PasswordField].Value())
 			}
 		case key.Matches(msg, keymap.VimBinding.Exit):
 			return m, tea.Quit
@@ -134,7 +134,7 @@ func (m *SignInModel) View() string {
 	return b.String()
 }
 
-func GetToken(username string, password string) tea.Cmd {
+func (m *SignInModel) GetToken(username string, password string) tea.Cmd {
 	return func() tea.Msg {
 		url := os.Getenv("URL")
 		url = "http://localhost:8080/user/signin"
@@ -155,14 +155,14 @@ func GetToken(username string, password string) tea.Cmd {
 			return SystemErrorMsg(err.Error())
 		}
 
-		var msg UserTokenMsg
-
 		switch r.StatusCode {
 		case http.StatusOK:
 			jsonBytes, err = io.ReadAll(r.Body)
 			if err != nil {
 				return SystemErrorMsg(err.Error())
 			}
+
+			var msg UserTokenMsg
 
 			err = json.Unmarshal(jsonBytes, &msg)
 
