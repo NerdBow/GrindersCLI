@@ -54,10 +54,17 @@ func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.homeModel = model.HomeModelInit()
 			m.currentState = m.homeModel
 		case model.TimerSwitch:
-			m.stopwatchModel = model.StopwatchModelInit()
+			name, category, goal := m.createLogModel.GetLogInfo()
+			m.stopwatchModel = model.StopwatchModelInit(name, category, goal, m.token)
 			m.currentState = m.stopwatchModel
 		}
-
+	case model.StopwatchModelSwitch:
+		switch msg {
+		case model.PreviousSwitch:
+			m.stopwatchModel = model.StopwatchModelInit("", "", "", "")
+			m.createLogModel = model.CreateLogModelInit()
+			m.currentState = m.createLogModel
+		}
 	}
 	_, cmd := m.currentState.Update(msg)
 	return m, cmd
