@@ -93,7 +93,11 @@ func (m *StopwatchModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m *StopwatchModel) View() string {
 	b := strings.Builder{}
-	durationTime := fmt.Sprintf("%02d:%02d:%02d", int(m.sw.Elapsed().Hours())%60, int(m.sw.Elapsed().Minutes())%60, int(m.sw.Elapsed().Seconds())%60)
+	timerBoarder := "X"
+	if m.sw.Running() {
+		timerBoarder = ""
+	}
+	durationTime := fmt.Sprintf("%s%02d:%02d:%02d%s", timerBoarder, int(m.sw.Elapsed().Hours())%60, int(m.sw.Elapsed().Minutes())%60, int(m.sw.Elapsed().Seconds())%60, timerBoarder)
 	renderedTime := textInputUnfocusedStyle.Render(durationTime)
 
 	if m.focusIndex == TimerField {
