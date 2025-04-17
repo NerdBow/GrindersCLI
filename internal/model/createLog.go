@@ -129,3 +129,7 @@ func (m *CreateLogModel) IsInputsEmpty() bool {
 	}
 	return false
 }
+
+func (m *CreateLogModel) GetLogInfo() (string, string, string) {
+	return m.inputs[0].Value(), m.inputs[1].Value(), m.inputs[2].Value()
+}
