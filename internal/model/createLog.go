@@ -85,6 +85,7 @@ func (m *CreateLogModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.errorMessage = "There can be no empty fields!"
 					return m, nil
 				}
+				m.clearErrorMessage()
 				return m, func() tea.Msg { return ModelMsg{CreateLog, Stopwatch, nil} }
 			}
 		}
@@ -116,7 +117,7 @@ func (m *CreateLogModel) View() string {
 	return b.String()
 }
 
-func (m *CreateLogModel) ClearErrorMessage() {
+func (m *CreateLogModel) clearErrorMessage() {
 	m.errorMessage = ""
 }
 
