@@ -8,8 +8,6 @@ import (
 	"strings"
 )
 
-type CreateLogModelSwitch uint8
-
 type EmptyFieldErrorMsg uint8
 
 const (
@@ -17,9 +15,6 @@ const (
 	CategoryField       = 1
 	GoalField           = 2
 	ConfirmButton       = iota
-
-	HomeSwitch CreateLogModelSwitch = iota
-	TimerSwitch
 
 	UsernameFieldEmpty EmptyFieldErrorMsg = iota
 	CategoryFieldEmpty
@@ -82,7 +77,7 @@ func (m *CreateLogModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return m, tea.Batch(cmds...)
 		case key.Matches(msg, keymap.VimBinding.Exit):
-			return m, func() tea.Msg { return HomeSwitch }
+			return m, func() tea.Msg { return ModelMsg{CreateLog, Home, nil} }
 		case key.Matches(msg, keymap.VimBinding.Select):
 			switch uint8(m.focusIndex) {
 			case ConfirmButton:
@@ -90,7 +85,8 @@ func (m *CreateLogModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.errorMessage = "There can be no empty fields!"
 					return m, nil
 				}
-				return m, func() tea.Msg { return TimerSwitch }
+				m.clearErrorMessage()
+				return m, func() tea.Msg { return ModelMsg{CreateLog, Stopwatch, nil} }
 			}
 		}
 	}
@@ -119,6 +115,10 @@ func (m *CreateLogModel) View() string {
 	b.WriteString(textInputFocusedStyle.Render(m.errorMessage))
 
 	return b.String()
+}
+
+func (m *CreateLogModel) clearErrorMessage() {
+	m.errorMessage = ""
 }
 
 func (m *CreateLogModel) IsInputsEmpty() bool {

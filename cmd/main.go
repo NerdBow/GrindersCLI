@@ -31,39 +31,55 @@ func (m *App) Init() tea.Cmd {
 
 func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case model.UserTokenMsg:
-		m.token = msg.Token
-		m.signInModel = model.SignInModelInit()
-		m.currentState = m.homeModel
-	case model.SignOutMsg:
-		m.token = ""
-		m.homeModel = model.HomeModelInit()
-		m.currentState = m.signInModel
-	case model.HomeModelSwitch:
-		switch msg {
-		case model.CreateLogSwitch:
-			m.createLogModel = model.CreateLogModelInit()
-			m.currentState = m.createLogModel
-		case model.ViewLogSwitch:
-		case model.EditLogSwitch:
-		case model.DeleteLogSwitch:
-		}
-	case model.CreateLogModelSwitch:
-		switch msg {
-		case model.HomeSwitch:
-			m.homeModel = model.HomeModelInit()
-			m.currentState = m.homeModel
-		case model.TimerSwitch:
-			name, category, goal := m.createLogModel.GetLogInfo()
-			m.stopwatchModel = model.StopwatchModelInit(name, category, goal, m.token)
-			m.currentState = m.stopwatchModel
-		}
-	case model.StopwatchModelSwitch:
-		switch msg {
-		case model.PreviousSwitch:
-			m.stopwatchModel = model.StopwatchModelInit("", "", "", "")
-			m.createLogModel = model.CreateLogModelInit()
-			m.currentState = m.createLogModel
+	case model.ModelMsg:
+		switch msg.CurrentModel {
+		case model.SignIn:
+			switch other := msg.Other.(type) {
+			case model.UserTokenMsg:
+				m.token = other.Token
+			}
+
+			switch msg.NextModel {
+			case model.Home:
+				m.signInModel = model.SignInModelInit()
+				m.currentState = m.homeModel
+			}
+		case model.Home:
+			switch msg.Other.(type) {
+			case model.SignOutMsg:
+				m.token = ""
+			}
+
+			switch msg.NextModel {
+			case model.CreateLog:
+				m.createLogModel = model.CreateLogModelInit()
+				m.currentState = m.createLogModel
+			case model.ViewLog:
+			case model.EditLog:
+			case model.DeleteLog:
+			case model.SignIn:
+				m.currentState = m.signInModel
+			}
+		case model.CreateLog:
+			switch msg.NextModel {
+			case model.Home:
+				m.homeModel = model.HomeModelInit()
+				m.currentState = m.homeModel
+			case model.Stopwatch:
+				name, category, goal := m.createLogModel.GetLogInfo()
+				m.stopwatchModel = model.StopwatchModelInit(name, category, goal, m.token)
+				m.currentState = m.stopwatchModel
+			}
+		case model.ViewLog:
+		case model.EditLog:
+		case model.DeleteLog:
+		case model.Stopwatch:
+			switch msg.NextModel {
+			case model.CreateLog:
+				m.stopwatchModel = model.StopwatchModelInit("", "", "", "")
+				m.currentState = m.createLogModel
+			}
+		case model.RestTimer:
 		}
 	}
 	_, cmd := m.currentState.Update(msg)

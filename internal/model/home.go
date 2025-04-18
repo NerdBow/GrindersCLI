@@ -10,19 +10,12 @@ import (
 
 type SignOutMsg struct{}
 
-type HomeModelSwitch uint8
-
 const (
 	CreateLogField uint8 = iota
 	ViewLogsField
 	EditLogField
 	DeleteLogField
 	SignOutField
-
-	CreateLogSwitch HomeModelSwitch = iota
-	ViewLogSwitch
-	EditLogSwitch
-	DeleteLogSwitch
 )
 
 type HomeModel struct {
@@ -56,15 +49,15 @@ func (m *HomeModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, keymap.VimBinding.Select):
 			switch uint8(m.focusIndex) {
 			case CreateLogField:
-				return m, func() tea.Msg { return CreateLogSwitch }
+				return m, func() tea.Msg { return ModelMsg{Home, CreateLog, nil} }
 			case ViewLogsField:
-				return m, func() tea.Msg { return ViewLogSwitch }
+				return m, func() tea.Msg { return ModelMsg{Home, ViewLog, nil} }
 			case EditLogField:
-				return m, func() tea.Msg { return EditLogSwitch }
+				return m, func() tea.Msg { return ModelMsg{Home, EditLog, nil} }
 			case DeleteLogField:
-				return m, func() tea.Msg { return DeleteLogSwitch }
+				return m, func() tea.Msg { return ModelMsg{Home, DeleteLog, nil} }
 			case SignOutField:
-				return m, func() tea.Msg { return SignOutMsg{} }
+				return m, func() tea.Msg { return ModelMsg{Home, SignIn, nil} }
 			}
 			return m, nil
 		}

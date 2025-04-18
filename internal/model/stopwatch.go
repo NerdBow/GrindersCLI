@@ -20,11 +20,7 @@ const (
 	TimerField = iota
 	RestField
 	FinishLogField
-	PreviousSwitch StopwatchModelSwitch = iota
-	ReSignInSwitch
 )
-
-type StopwatchModelSwitch uint8
 
 type PostLogErrorMsg struct {
 	Message string `json:"message"`
@@ -79,7 +75,7 @@ func (m *StopwatchModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, tea.Batch(cmds...)
 			}
 		case key.Matches(msg, keymap.VimBinding.Exit):
-			return nil, func() tea.Msg { return PreviousSwitch }
+			return nil, func() tea.Msg { return ModelMsg{Stopwatch, CreateLog, nil} }
 		}
 	case SystemErrorMsg:
 		m.status = string(msg)
