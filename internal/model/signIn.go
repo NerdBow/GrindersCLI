@@ -101,9 +101,6 @@ func (m *SignInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case SignInErrorMsg:
 		m.errorMessage = msg.Message
 		return m, nil
-	case UserTokenMsg:
-		m.errorMessage = "Sign In Successful"
-		return m, nil
 	}
 	cmds := make([]tea.Cmd, len(m.inputs))
 
@@ -170,7 +167,11 @@ func (m *SignInModel) GetToken(username string, password string) tea.Cmd {
 				return SystemErrorMsg(err.Error())
 			}
 
-			return msg
+			return ModelMsg{
+				SignIn,
+				Home,
+				msg,
+			}
 
 		default:
 			jsonBytes, err = io.ReadAll(r.Body)
