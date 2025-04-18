@@ -116,6 +116,12 @@ func (m *CreateLogModel) View() string {
 	return b.String()
 }
 
+// Resets the focusIndex back to name and removes any error message
+func (m *CreateLogModel) Reset() {
+	m.errorMessage = ""
+	m.focusIndex = int(NameField)
+}
+
 func (m *CreateLogModel) IsInputsEmpty() bool {
 	for _, t := range m.inputs {
 		if t.Value() == "" {
