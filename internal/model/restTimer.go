@@ -1,11 +1,12 @@
 package model
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
-	"github.com/NerdBow/GrindersTUI/internal/keymap"
-	"github.com/charmbracelet/bubbles/key"
+	// "github.com/NerdBow/GrindersTUI/internal/keymap"
+	// "github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -29,5 +30,9 @@ func (m *RestTimerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m *RestTimerModel) View() string {
 	b := strings.Builder{}
-	return ""
+
+	durationTime := fmt.Sprintf("%02d:%02d:%02d", int(m.duration.Hours())%60, int(m.duration.Minutes())%60, int(m.duration.Seconds())%60)
+	b.WriteString(durationTime)
+
+	return b.String()
 }
