@@ -8,12 +8,17 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+const (
+	WORKTORESTRATIO int = 5
+)
+
 type App struct {
 	currentState   tea.Model
 	homeModel      *model.HomeModel
 	signInModel    *model.SignInModel
 	createLogModel *model.CreateLogModel
 	stopwatchModel *model.StopwatchModel
+	restTimerModel *model.RestTimerModel
 	token          string
 }
 
@@ -78,8 +83,15 @@ func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case model.CreateLog:
 				m.stopwatchModel = model.StopwatchModelInit("", "", "", "")
 				m.currentState = m.createLogModel
+			case model.RestTimer:
+				m.restTimerModel = model.RestTimerModelInit(m.stopwatchModel.GetWorkTime(), WORKTORESTRATIO)
+				m.currentState = m.restTimerModel
 			}
 		case model.RestTimer:
+			switch msg.NextModel {
+			case model.Stopwatch:
+				m.currentState = m.stopwatchModel
+			}
 		}
 	}
 	_, cmd := m.currentState.Update(msg)
