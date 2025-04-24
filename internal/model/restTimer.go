@@ -11,12 +11,18 @@ import (
 )
 
 type RestTimerModel struct {
+	done     bool
+	running  bool
+	text     string
 	duration time.Duration
 }
 
 func RestTimerModelInit(workTime time.Duration, ratio int) *RestTimerModel {
 	return &RestTimerModel{
-		duration: time.Duration(float64(workTime.Nanoseconds()) / float64(ratio)),
+		done:     false,
+		running:  false,
+		duration: time.Duration(workTime.Nanoseconds() / int64(ratio)),
+		text:     "Press select to start your break.",
 	}
 }
 
