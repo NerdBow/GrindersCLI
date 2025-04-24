@@ -130,7 +130,10 @@ func (m *StopwatchModel) View() string {
 }
 
 func (m *StopwatchModel) GetWorkTime() time.Duration {
-	return m.sw.Elapsed()
+	if len(m.workSessions) < 2 {
+		return m.workSessions[len(m.workSessions)-1]
+	}
+	return m.workSessions[len(m.workSessions)-1] - m.workSessions[len(m.workSessions)-2]
 }
 
 func (m *StopwatchModel) postLog() tea.Cmd {
