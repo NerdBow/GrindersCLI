@@ -125,7 +125,25 @@ func (m *StopwatchModel) View() string {
 	b.WriteRune('\n')
 	b.WriteRune('\n')
 
+	if len(m.workSessions) != 0 {
+		b.WriteString("Work Sessions:")
+		for i := range m.workSessions {
+			b.WriteRune('\n')
+
+			duration := m.workSessions[i]
+			if i != 0 {
+				duration -= m.workSessions[i-1]
+			}
+			b.WriteString(fmt.Sprintf("%d: %02d:%02d:%02d", i+1, int(duration.Hours())%60, int(duration.Minutes())%60, int(duration.Seconds())%60))
+		}
+
+	}
+
+	b.WriteRune('\n')
+	b.WriteRune('\n')
+
 	b.WriteString(textInputFocusedStyle.Render(m.status))
+
 	return b.String()
 }
 
