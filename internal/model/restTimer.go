@@ -37,8 +37,12 @@ func (m *RestTimerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m *RestTimerModel) View() string {
 	b := strings.Builder{}
 
-	durationTime := fmt.Sprintf("%02d:%02d:%02d", int(m.duration.Hours())%60, int(m.duration.Minutes())%60, int(m.duration.Seconds())%60)
-	b.WriteString(durationTime)
+	if m.running {
+		durationTime := fmt.Sprintf("%02d:%02d:%02d", int(m.duration.Hours())%60, int(m.duration.Minutes())%60, int(m.duration.Seconds())%60)
+		b.WriteString(durationTime)
+		return b.String()
+	}
 
+	b.WriteString(m.text)
 	return b.String()
 }
