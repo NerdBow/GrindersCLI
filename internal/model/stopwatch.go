@@ -67,7 +67,7 @@ func (m *StopwatchModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				cmd := m.sw.Toggle()
 				return m, cmd
 			case RestField:
-				return m, nil //TODO: this is for later
+				return m, func() tea.Msg { return ModelMsg{Stopwatch, RestTimer, nil} }
 			case FinishLogField:
 				cmds := make([]tea.Cmd, 2)
 				cmds[0] = m.sw.Stop()
@@ -124,6 +124,10 @@ func (m *StopwatchModel) View() string {
 
 	b.WriteString(textInputFocusedStyle.Render(m.status))
 	return b.String()
+}
+
+func (m *StopwatchModel) GetWorkTime() time.Duration {
+	return m.sw.Elapsed()
 }
 
 func (m *StopwatchModel) postLog() tea.Cmd {
