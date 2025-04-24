@@ -31,23 +31,25 @@ type LogIdMsg struct {
 }
 
 type StopwatchModel struct {
-	sw          stopwatch.Model
-	focusIndex  int
-	logName     string
-	logCategory string
-	logGoal     string
-	token       string
-	status      string
+	sw           stopwatch.Model
+	focusIndex   int
+	logName      string
+	logCategory  string
+	logGoal      string
+	token        string
+	status       string
+	workSessions []time.Duration
 }
 
 func StopwatchModelInit(logName string, logCategory string, logGoal string, token string) *StopwatchModel {
 	return &StopwatchModel{
-		sw:          stopwatch.New(),
-		focusIndex:  0,
-		logName:     logName,
-		logCategory: logCategory,
-		logGoal:     logGoal,
-		token:       token,
+		sw:           stopwatch.New(),
+		focusIndex:   0,
+		logName:      logName,
+		logCategory:  logCategory,
+		logGoal:      logGoal,
+		token:        token,
+		workSessions: make([]time.Duration, 0, 5),
 	}
 }
 
@@ -67,6 +69,7 @@ func (m *StopwatchModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				cmd := m.sw.Toggle()
 				return m, cmd
 			case RestField:
+				m.workSessions = append(m.workSessions, m.sw.Elapsed())
 				return m, func() tea.Msg { return ModelMsg{Stopwatch, RestTimer, nil} }
 			case FinishLogField:
 				cmds := make([]tea.Cmd, 2)
