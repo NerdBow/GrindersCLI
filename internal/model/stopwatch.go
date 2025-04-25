@@ -31,23 +31,25 @@ type LogIdMsg struct {
 }
 
 type StopwatchModel struct {
-	sw          stopwatch.Model
-	focusIndex  int
-	logName     string
-	logCategory string
-	logGoal     string
-	token       string
-	status      string
+	sw           stopwatch.Model
+	focusIndex   int
+	logName      string
+	logCategory  string
+	logGoal      string
+	token        string
+	status       string
+	workSessions []time.Duration
 }
 
 func StopwatchModelInit(logName string, logCategory string, logGoal string, token string) *StopwatchModel {
 	return &StopwatchModel{
-		sw:          stopwatch.New(),
-		focusIndex:  0,
-		logName:     logName,
-		logCategory: logCategory,
-		logGoal:     logGoal,
-		token:       token,
+		sw:           stopwatch.New(),
+		focusIndex:   0,
+		logName:      logName,
+		logCategory:  logCategory,
+		logGoal:      logGoal,
+		token:        token,
+		workSessions: make([]time.Duration, 0, 5),
 	}
 }
 
@@ -67,7 +69,8 @@ func (m *StopwatchModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				cmd := m.sw.Toggle()
 				return m, cmd
 			case RestField:
-				return m, nil //TODO: this is for later
+				m.workSessions = append(m.workSessions, m.sw.Elapsed())
+				return m, func() tea.Msg { return ModelMsg{Stopwatch, RestTimer, nil} }
 			case FinishLogField:
 				cmds := make([]tea.Cmd, 2)
 				cmds[0] = m.sw.Stop()
@@ -122,8 +125,33 @@ func (m *StopwatchModel) View() string {
 	b.WriteRune('\n')
 	b.WriteRune('\n')
 
+	if len(m.workSessions) != 0 {
+		b.WriteString("Work Sessions:")
+		for i := range m.workSessions {
+			b.WriteRune('\n')
+
+			duration := m.workSessions[i]
+			if i != 0 {
+				duration -= m.workSessions[i-1]
+			}
+			b.WriteString(fmt.Sprintf("%d: %02d:%02d:%02d", i+1, int(duration.Hours())%60, int(duration.Minutes())%60, int(duration.Seconds())%60))
+		}
+
+	}
+
+	b.WriteRune('\n')
+	b.WriteRune('\n')
+
 	b.WriteString(textInputFocusedStyle.Render(m.status))
+
 	return b.String()
+}
+
+func (m *StopwatchModel) GetWorkTime() time.Duration {
+	if len(m.workSessions) < 2 {
+		return m.workSessions[len(m.workSessions)-1]
+	}
+	return m.workSessions[len(m.workSessions)-1] - m.workSessions[len(m.workSessions)-2]
 }
 
 func (m *StopwatchModel) postLog() tea.Cmd {
