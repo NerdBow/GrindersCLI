@@ -60,6 +60,8 @@ func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.createLogModel = model.CreateLogModelInit()
 				m.currentState = m.createLogModel
 			case model.ViewLog:
+				m.viewLogModel = model.ViewLogModelInit()
+				m.currentState = m.viewLogModel
 			case model.EditLog:
 			case model.DeleteLog:
 			case model.SignIn:
