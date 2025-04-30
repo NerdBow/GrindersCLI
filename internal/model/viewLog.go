@@ -15,6 +15,14 @@ const (
 
 type ViewLogModel struct {
 	focusIndex int
+	choices    []string
+}
+
+func ViewLogModelInit() *ViewLogModel {
+	return &ViewLogModel{
+		choices:    []string{"Recent Logs", "Id Search", "Custom Search"},
+		focusIndex: 0,
+	}
 }
 
 func (m *ViewLogModel) Init() tea.Cmd {
