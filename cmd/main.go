@@ -19,6 +19,7 @@ type App struct {
 	createLogModel *model.CreateLogModel
 	stopwatchModel *model.StopwatchModel
 	restTimerModel *model.RestTimerModel
+	viewLogModel   *model.ViewLogModel
 	token          string
 }
 
@@ -78,6 +79,11 @@ func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.currentState = m.stopwatchModel
 			}
 		case model.ViewLog:
+			switch msg.NextModel {
+			case model.Home:
+				m.homeModel = model.HomeModelInit()
+				m.currentState = m.homeModel
+			}
 		case model.EditLog:
 		case model.DeleteLog:
 		case model.Stopwatch:
