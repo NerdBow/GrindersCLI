@@ -13,6 +13,9 @@ const (
 	DeleteLog
 	Stopwatch
 	RestTimer
+	RecentLogs
+	IdLogSearch
+	CustomLogSearch
 )
 
 type ModelMsg struct {
