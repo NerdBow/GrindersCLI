@@ -14,3 +14,23 @@ type RecentLogsModel struct {
 	logTable   table.Model
 	focusIndex int
 }
+
+func (m *RecentLogsModel) Init() tea.Cmd {
+	return nil
+}
+
+func (m *RecentLogsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch {
+		case key.Matches(msg, keymap.VimBinding.Exit):
+			return m, func() tea.Msg { return ModelMsg{RecentLogs, ViewLog, nil} }
+		}
+	}
+	return m, nil
+}
+
+func (m *RecentLogsModel) View() string {
+	b := strings.Builder{}
+	return b.String()
+}
