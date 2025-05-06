@@ -121,8 +121,15 @@ func (m *App) View() string {
 }
 
 func main() {
+	f, err := tea.LogToFile("debug.log", "debug")
+	if err != nil {
+		fmt.Println("fatal:", err)
+		os.Exit(1)
+	}
+	defer f.Close()
+
 	p := tea.NewProgram(initApp(), tea.WithAltScreen())
-	_, err := p.Run()
+	_, err = p.Run()
 	if err != nil {
 		fmt.Printf("There is an error: %v", err)
 		os.Exit(1)
