@@ -5,10 +5,14 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
-	"strings"
+	"github.com/charmbracelet/lipgloss"
 )
 
 const ()
+
+var baseStyle = lipgloss.NewStyle().
+	BorderStyle(lipgloss.NormalBorder()).
+	BorderForeground(lipgloss.Color("240"))
 
 type RecentLogsModel struct {
 	logTable   table.Model
@@ -31,6 +35,7 @@ func (m *RecentLogsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *RecentLogsModel) View() string {
-	b := strings.Builder{}
-	return b.String()
+	return baseStyle.Render(m.logTable.View()) + "\n"
+}
+
 }
