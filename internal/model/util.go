@@ -1,6 +1,10 @@
 package model
 
 import (
+	"fmt"
+	"strconv"
+	"time"
+
 	tea "github.com/charmbracelet/bubbletea"
 )
 
