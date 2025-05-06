@@ -56,7 +56,19 @@ func (m *RecentLogsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch {
 		case key.Matches(msg, keymap.VimBinding.Exit):
 			return m, func() tea.Msg { return ModelMsg{RecentLogs, ViewLog, nil} }
+		case key.Matches(msg, keymap.VimBinding.Select):
+			return m, m.getRecentLogs()
 		}
+	case []Log:
+		m.logs = msg
+		rows := make([]table.Row, 0, 20)
+		for _, log := range m.logs {
+			rows = append(rows, table.Row(log.ToStringArray()))
+		}
+		m.logTable.SetRows(rows)
+
+	case SystemErrorMsg:
+	case PostLogErrorMsg:
 	}
 	return m, nil
 }
