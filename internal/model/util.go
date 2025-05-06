@@ -23,3 +23,14 @@ type ModelMsg struct {
 	NextModel    int
 	Other        tea.Msg
 }
+
+type Log struct {
+	Id       int    `json:"id"`
+	Name     string `json:"name"`
+	Category string `json:"category"`
+	Goal     string `json:"goal"`
+	Date     int    `json:"date"`
+	Duration int    `json:"duration"`
+	UserId   int    `json:"userId"`
+}
+
