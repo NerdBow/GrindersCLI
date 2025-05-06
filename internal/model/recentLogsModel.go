@@ -47,7 +47,7 @@ func RecentLogsModelInit(token string) *RecentLogsModel {
 }
 
 func (m *RecentLogsModel) Init() tea.Cmd {
-	return nil
+	return m.getRecentLogs()
 }
 
 func (m *RecentLogsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
