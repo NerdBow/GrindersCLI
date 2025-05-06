@@ -1,6 +1,12 @@
 package model
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+
 	"github.com/NerdBow/GrindersTUI/internal/keymap"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/table"
@@ -59,4 +65,52 @@ func (m *RecentLogsModel) View() string {
 	return baseStyle.Render(m.logTable.View()) + "\n"
 }
 
+func (m *RecentLogsModel) getRecentLogs() tea.Cmd {
+	return func() tea.Msg {
+		url := os.Getenv("URL")
+
+		url = "http://localhost:8080/user/log"
+
+		req, err := http.NewRequest("GET", fmt.Sprintf("%s?order=DATE_DES&page=%d", url, m.page), nil)
+
+		if err != nil {
+			return SystemErrorMsg(err.Error())
+		}
+
+		req.Header.Add("Authorization", "Bearer "+m.token)
+
+		res, err := http.DefaultClient.Do(req)
+
+		if err != nil {
+			return SystemErrorMsg(err.Error())
+		}
+
+		logs := make([]Log, 0, 20)
+
+		switch res.StatusCode {
+		case http.StatusOK:
+			jsonBytes, err := io.ReadAll(res.Body)
+			if err != nil {
+				return SystemErrorMsg(err.Error())
+			}
+			err = json.Unmarshal(jsonBytes, &logs)
+
+			if err != nil {
+				return SystemErrorMsg(err.Error())
+			}
+			return logs
+		default:
+			jsonBytes, err := io.ReadAll(res.Body)
+			if err != nil {
+				return SystemErrorMsg(err.Error())
+			}
+			var errMsg PostLogErrorMsg
+			err = json.Unmarshal(jsonBytes, &errMsg)
+
+			if err != nil {
+				return SystemErrorMsg(err.Error())
+			}
+			return errMsg
+		}
+	}
 }
