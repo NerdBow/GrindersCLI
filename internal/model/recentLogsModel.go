@@ -15,8 +15,29 @@ var baseStyle = lipgloss.NewStyle().
 	BorderForeground(lipgloss.Color("240"))
 
 type RecentLogsModel struct {
+	token      string
+	page       int
 	logTable   table.Model
 	focusIndex int
+	status     string
+	logs       []Log
+}
+
+func RecentLogsModelInit(token string) *RecentLogsModel {
+	columns := []table.Column{
+		{Title: "Id", Width: 10},
+		{Title: "Date", Width: 10},
+		{Title: "Duration", Width: 8},
+		{Title: "Name", Width: 25},
+		{Title: "Category", Width: 25},
+		{Title: "Goal", Width: 75},
+	}
+	return &RecentLogsModel{
+		token:      token,
+		page:       1,
+		logTable:   table.New(table.WithColumns(columns)),
+		focusIndex: 0,
+	}
 }
 
 func (m *RecentLogsModel) Init() tea.Cmd {
