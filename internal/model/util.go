@@ -39,7 +39,14 @@ type Log struct {
 }
 
 func (l Log) ToStringArray() []string {
+	return []string{strconv.Itoa(l.Id), l.DateString(), l.DurationString(), l.Name, l.Category, l.Goal}
+}
+
+func (l Log) DurationString() string {
 	duration := time.Second * time.Duration(l.Duration)
-	durationTime := fmt.Sprintf("%02d:%02d:%02d", int(duration.Hours())%60, int(duration.Minutes())%60, int(duration.Seconds())%60)
-	return []string{strconv.Itoa(l.Id), time.Unix(int64(l.Date), 0).Format("2006-01-02"), durationTime, l.Name, l.Category, l.Goal}
+	return fmt.Sprintf("%02d:%02d:%02d", int(duration.Hours())%60, int(duration.Minutes())%60, int(duration.Seconds())%60)
+}
+
+func (l Log) DateString() string {
+	return time.Unix(int64(l.Date), 0).Format("2006-01-02")
 }
