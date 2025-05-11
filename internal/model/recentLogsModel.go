@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 
@@ -14,39 +15,45 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-const ()
+const (
+	IdWidth       int = 3
+	DateWidth     int = 10
+	DurationWidth int = 8
+	NameWidth     int = 10
+	CategoryWidth int = 10
+	GoalWidth     int = 20
+)
 
 var baseStyle = lipgloss.NewStyle().
 	BorderStyle(lipgloss.NormalBorder()).
 	BorderForeground(lipgloss.Color("240"))
 
 type RecentLogsModel struct {
-	token      string
-	page       int
-	logTable   table.Model
-	focusIndex int
-	status     string
-	logs       []Log
+	token    string
+	page     int
+	logTable table.Model
+	status   string
+	logs     []Log
 }
 
 func RecentLogsModelInit(token string) *RecentLogsModel {
 	columns := []table.Column{
-		{Title: "Id", Width: 10},
-		{Title: "Date", Width: 10},
-		{Title: "Duration", Width: 8},
-		{Title: "Name", Width: 25},
-		{Title: "Category", Width: 25},
-		{Title: "Goal", Width: 75},
+		{Title: "Id", Width: IdWidth},
+		{Title: "Date", Width: DateWidth},
+		{Title: "Duration", Width: DurationWidth},
+		{Title: "Name", Width: NameWidth},
+		{Title: "Category", Width: CategoryWidth},
+		{Title: "Goal", Width: GoalWidth},
 	}
 	return &RecentLogsModel{
-		token:      token,
-		page:       1,
-		logTable:   table.New(table.WithColumns(columns)),
-		focusIndex: 0,
+		token:    token,
+		page:     1,
+		logTable: table.New(table.WithColumns(columns)),
 	}
 }
 
 func (m *RecentLogsModel) Init() tea.Cmd {
+	m.logTable.SetHeight(20)
 	return m.getRecentLogs()
 }
 
@@ -75,6 +82,8 @@ func (m *RecentLogsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case SystemErrorMsg:
 	case PostLogErrorMsg:
+	case tea.WindowSizeMsg:
+		log.Printf("H: %d W: %d", msg.Height, msg.Width)
 	}
 	return m, nil
 }
