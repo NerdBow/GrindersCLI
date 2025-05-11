@@ -57,7 +57,13 @@ func (m *RecentLogsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, keymap.VimBinding.Exit):
 			return m, func() tea.Msg { return ModelMsg{RecentLogs, ViewLog, nil} }
 		case key.Matches(msg, keymap.VimBinding.Select):
-			return m, m.getRecentLogs()
+			return m, func() tea.Msg { return ModelMsg{RecentLogs, SelectedLog, m.logs[m.logTable.Cursor()]} }
+		case key.Matches(msg, keymap.VimBinding.Up):
+			m.logTable.MoveUp(1)
+			return m, nil
+		case key.Matches(msg, keymap.VimBinding.Down):
+			m.logTable.MoveDown(1)
+			return m, nil
 		}
 	case []Log:
 		m.logs = msg
