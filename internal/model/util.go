@@ -18,6 +18,7 @@ const (
 	Stopwatch
 	RestTimer
 	RecentLogs
+	SelectedLog
 	IdLogSearch
 	CustomLogSearch
 )

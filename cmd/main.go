@@ -13,15 +13,16 @@ const (
 )
 
 type App struct {
-	currentState    tea.Model
-	homeModel       *model.HomeModel
-	signInModel     *model.SignInModel
-	createLogModel  *model.CreateLogModel
-	stopwatchModel  *model.StopwatchModel
-	restTimerModel  *model.RestTimerModel
-	viewLogModel    *model.ViewLogModel
-	recentLogsModel *model.RecentLogsModel
-	token           string
+	currentState     tea.Model
+	homeModel        *model.HomeModel
+	signInModel      *model.SignInModel
+	createLogModel   *model.CreateLogModel
+	stopwatchModel   *model.StopwatchModel
+	restTimerModel   *model.RestTimerModel
+	viewLogModel     *model.ViewLogModel
+	selectedLogModel *model.SelectedLogModel
+	recentLogsModel  *model.RecentLogsModel
+	token            string
 }
 
 func initApp() *App {
@@ -93,6 +94,17 @@ func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			switch msg.NextModel {
 			case model.ViewLog:
 				m.currentState = m.viewLogModel
+			case model.SelectedLog:
+				switch other := msg.Other.(type) {
+				case model.Log:
+					m.selectedLogModel = model.SelectedLogModelInit(other, model.RecentLogs)
+				}
+				m.currentState = m.selectedLogModel
+			}
+		case model.SelectedLog:
+			switch msg.NextModel {
+			case model.RecentLogs:
+				m.currentState = m.recentLogsModel
 			}
 		case model.EditLog:
 		case model.DeleteLog:
@@ -111,6 +123,9 @@ func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.currentState = m.stopwatchModel
 			}
 		}
+	case tea.WindowSizeMsg:
+		// TODO: have all the models take in a resize function so the dimension can be sent in from here
+		// m.currentState.resize(msg.Height, msg.Width)
 	}
 	_, cmd := m.currentState.Update(msg)
 	return m, cmd
