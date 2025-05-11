@@ -10,11 +10,12 @@ import (
 )
 
 type SelectedLogModel struct {
-	log Log
+	log           Log
+	previousModel int
 }
 
-func SelectedLogModelInit(log Log) *SelectedLogModel {
-	return &SelectedLogModel{log}
+func SelectedLogModelInit(log Log, previousModel int) *SelectedLogModel {
+	return &SelectedLogModel{log, previousModel}
 }
 
 func (m *SelectedLogModel) Init() tea.Cmd {
