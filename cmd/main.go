@@ -13,13 +13,16 @@ const (
 )
 
 type App struct {
-	currentState   tea.Model
-	homeModel      *model.HomeModel
-	signInModel    *model.SignInModel
-	createLogModel *model.CreateLogModel
-	stopwatchModel *model.StopwatchModel
-	restTimerModel *model.RestTimerModel
-	token          string
+	currentState     tea.Model
+	homeModel        *model.HomeModel
+	signInModel      *model.SignInModel
+	createLogModel   *model.CreateLogModel
+	stopwatchModel   *model.StopwatchModel
+	restTimerModel   *model.RestTimerModel
+	viewLogModel     *model.ViewLogModel
+	selectedLogModel *model.SelectedLogModel
+	recentLogsModel  *model.RecentLogsModel
+	token            string
 }
 
 func initApp() *App {
@@ -60,6 +63,8 @@ func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.createLogModel = model.CreateLogModelInit()
 				m.currentState = m.createLogModel
 			case model.ViewLog:
+				m.viewLogModel = model.ViewLogModelInit()
+				m.currentState = m.viewLogModel
 			case model.EditLog:
 			case model.DeleteLog:
 			case model.SignIn:
@@ -76,6 +81,31 @@ func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.currentState = m.stopwatchModel
 			}
 		case model.ViewLog:
+			switch msg.NextModel {
+			case model.Home:
+				m.homeModel = model.HomeModelInit()
+				m.currentState = m.homeModel
+			case model.RecentLogs:
+				m.recentLogsModel = model.RecentLogsModelInit(m.token)
+				m.currentState = m.recentLogsModel
+				return m, m.recentLogsModel.Init()
+			}
+		case model.RecentLogs:
+			switch msg.NextModel {
+			case model.ViewLog:
+				m.currentState = m.viewLogModel
+			case model.SelectedLog:
+				switch other := msg.Other.(type) {
+				case model.Log:
+					m.selectedLogModel = model.SelectedLogModelInit(other, model.RecentLogs)
+				}
+				m.currentState = m.selectedLogModel
+			}
+		case model.SelectedLog:
+			switch msg.NextModel {
+			case model.RecentLogs:
+				m.currentState = m.recentLogsModel
+			}
 		case model.EditLog:
 		case model.DeleteLog:
 		case model.Stopwatch:
@@ -93,6 +123,9 @@ func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.currentState = m.stopwatchModel
 			}
 		}
+	case tea.WindowSizeMsg:
+		// TODO: have all the models take in a resize function so the dimension can be sent in from here
+		// m.currentState.resize(msg.Height, msg.Width)
 	}
 	_, cmd := m.currentState.Update(msg)
 	return m, cmd
@@ -103,8 +136,15 @@ func (m *App) View() string {
 }
 
 func main() {
+	f, err := tea.LogToFile("debug.log", "debug")
+	if err != nil {
+		fmt.Println("fatal:", err)
+		os.Exit(1)
+	}
+	defer f.Close()
+
 	p := tea.NewProgram(initApp(), tea.WithAltScreen())
-	_, err := p.Run()
+	_, err = p.Run()
 	if err != nil {
 		fmt.Printf("There is an error: %v", err)
 		os.Exit(1)
