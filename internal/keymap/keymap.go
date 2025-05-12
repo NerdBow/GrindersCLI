@@ -7,6 +7,8 @@ import (
 type KeyBindings struct {
 	Up          key.Binding
 	Down        key.Binding
+	Left        key.Binding
+	Right       key.Binding
 	Select      key.Binding
 	Exit        key.Binding
 	ChangeFocus key.Binding
@@ -22,6 +24,16 @@ var (
 		Down: key.NewBinding(
 			key.WithKeys("j", "down"),
 			key.WithHelp("↓/j", "move down"),
+		),
+
+		Left: key.NewBinding(
+			key.WithKeys("h", "left"),
+			key.WithHelp("←/h", "move left"),
+		),
+
+		Right: key.NewBinding(
+			key.WithKeys("l", "right"),
+			key.WithHelp("→/l", "move right"),
 		),
 
 		Select: key.NewBinding(
