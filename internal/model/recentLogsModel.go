@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/NerdBow/GrindersTUI/internal/keymap"
 	"github.com/charmbracelet/bubbles/key"
@@ -71,6 +72,15 @@ func (m *RecentLogsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, keymap.VimBinding.Down):
 			m.logTable.MoveDown(1)
 			return m, nil
+		case key.Matches(msg, keymap.VimBinding.Left):
+			m.page--
+			if m.page == 0 {
+				m.page = 1
+			}
+			return m, m.getRecentLogs()
+		case key.Matches(msg, keymap.VimBinding.Right):
+			m.page++
+			return m, m.getRecentLogs()
 		}
 	case []Log:
 		m.logs = msg
@@ -89,7 +99,11 @@ func (m *RecentLogsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *RecentLogsModel) View() string {
-	return baseStyle.Render(m.logTable.View()) + "\n"
+	b := strings.Builder{}
+	b.WriteString(baseStyle.Render(m.logTable.View()))
+	b.WriteRune('\n')
+	b.WriteString(fmt.Sprintf("Page: %d", m.page))
+	return b.String()
 }
 
 func (m *RecentLogsModel) getRecentLogs() tea.Cmd {
