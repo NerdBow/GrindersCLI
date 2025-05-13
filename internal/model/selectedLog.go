@@ -118,6 +118,7 @@ func (m *SelectedLogModel) View() string {
 		b.WriteString("   ")
 	}
 	b.WriteRune('\n')
+	b.WriteString(textInputFocusedStyle.Render(m.status))
 	b.WriteRune('\n')
 	b.WriteString(m.textField.View())
 	return b.String()
