@@ -37,13 +37,13 @@ var (
 		),
 
 		Select: key.NewBinding(
-			key.WithKeys(" ", "enter"),
-			key.WithHelp("space/enter", "select"),
+			key.WithKeys("enter"),
+			key.WithHelp("enter", "select"),
 		),
 
 		Exit: key.NewBinding(
-			key.WithKeys("esc", "q", "ctrl+c"),
-			key.WithHelp("esc/q/ctrl+c", "quit"),
+			key.WithKeys("esc", "ctrl+c"),
+			key.WithHelp("esc/ctrl+c", "quit"),
 		),
 
 		ChangeFocus: key.NewBinding(
