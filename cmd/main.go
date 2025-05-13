@@ -97,7 +97,7 @@ func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case model.SelectedLog:
 				switch other := msg.Other.(type) {
 				case model.Log:
-					m.selectedLogModel = model.SelectedLogModelInit(other, model.RecentLogs)
+					m.selectedLogModel = model.SelectedLogModelInit(other, model.RecentLogs, m.token)
 				}
 				m.currentState = m.selectedLogModel
 			}
@@ -105,6 +105,7 @@ func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			switch msg.NextModel {
 			case model.RecentLogs:
 				m.currentState = m.recentLogsModel
+				return m, m.recentLogsModel.Init()
 			}
 		case model.EditLog:
 		case model.DeleteLog:
