@@ -76,5 +76,17 @@ func (m *SelectedLogModel) View() string {
 	b.WriteRune('\n')
 	b.WriteString(fmt.Sprintf("Duration: %s", m.log.DurationString()))
 	b.WriteRune('\n')
+	b.WriteRune('\n')
+	for i := range m.choices {
+		if i != m.focusIndex {
+			b.WriteString(textInputUnfocusedStyle.Render(m.choices[i]))
+		} else {
+			b.WriteString(textInputFocusedStyle.Render(m.choices[i]))
+		}
+		b.WriteString("   ")
+	}
+	b.WriteRune('\n')
+	b.WriteRune('\n')
+	b.WriteString(m.textField.View())
 	return b.String()
 }
