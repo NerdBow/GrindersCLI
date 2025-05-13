@@ -6,12 +6,24 @@ import (
 
 	"github.com/NerdBow/GrindersTUI/internal/keymap"
 	"github.com/charmbracelet/bubbles/key"
+	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+)
+
+const (
+	BackField = iota
+	EditField
+	DeleteField
+	TextField
 )
 
 type SelectedLogModel struct {
 	log           Log
 	previousModel int
+	choices       []string
+	focusIndex    int
+	textField     textinput.Model
+	token         string
 }
 
 func SelectedLogModelInit(log Log, previousModel int) *SelectedLogModel {
