@@ -2,6 +2,10 @@ package model
 
 import (
 	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"strconv"
 	"strings"
 
 	"github.com/NerdBow/GrindersTUI/internal/keymap"
@@ -16,6 +20,8 @@ const (
 	DeleteField
 	TextField
 )
+
+type ConfirmDeletion bool
 
 type SelectedLogModel struct {
 	log           Log
@@ -90,3 +96,17 @@ func (m *SelectedLogModel) View() string {
 	b.WriteString(m.textField.View())
 	return b.String()
 }
+
+func (m *SelectedLogModel) CheckTypedId(typedId string, logId int) tea.Cmd {
+	return func() tea.Msg {
+		id, err := strconv.Atoi(typedId)
+		if err != nil {
+			return ConfirmDeletion(false)
+		}
+		if id != logId {
+			return ConfirmDeletion(false)
+		}
+		return ConfirmDeletion(true)
+	}
+}
+
