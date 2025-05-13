@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -30,10 +31,19 @@ type SelectedLogModel struct {
 	focusIndex    int
 	textField     textinput.Model
 	token         string
+	status        string
 }
 
 func SelectedLogModelInit(log Log, previousModel int, token string) *SelectedLogModel {
-	return &SelectedLogModel{log, previousModel, []string{"Back", "Edit", "Delete"}, 0, textinput.New(), token}
+	return &SelectedLogModel{
+		log:           log,
+		previousModel: previousModel,
+		choices:       []string{"Back", "Edit", "Delete"},
+		focusIndex:    0,
+		textField:     textinput.New(),
+		token:         token,
+		status:        "",
+	}
 }
 
 func (m *SelectedLogModel) Init() tea.Cmd {
