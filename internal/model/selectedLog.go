@@ -26,12 +26,12 @@ type SelectedLogModel struct {
 	token         string
 }
 
-func SelectedLogModelInit(log Log, previousModel int) *SelectedLogModel {
-	return &SelectedLogModel{log, previousModel}
+func SelectedLogModelInit(log Log, previousModel int, token string) *SelectedLogModel {
+	return &SelectedLogModel{log, previousModel, []string{"Back", "Edit", "Delete"}, 0, textinput.New(), token}
 }
 
 func (m *SelectedLogModel) Init() tea.Cmd {
-	return nil
+	return textinput.Blink
 }
 
 func (m *SelectedLogModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
