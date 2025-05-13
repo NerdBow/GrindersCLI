@@ -40,9 +40,26 @@ func (m *SelectedLogModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch {
 		case key.Matches(msg, keymap.VimBinding.Exit):
 			return m, func() tea.Msg { return ModelMsg{SelectedLog, m.previousModel, nil} }
+		case key.Matches(msg, keymap.VimBinding.ChangeFocus):
+			m.focusIndex = (m.focusIndex + 1) % len(m.choices)
+		case key.Matches(msg, keymap.VimBinding.Select):
+			switch m.focusIndex {
+			case BackField:
+				m.textField.Blur()
+				return m, func() tea.Msg { return ModelMsg{SelectedLog, m.previousModel, nil} }
+			case EditField:
+				m.textField.Blur()
+			case DeleteField:
+				return m, m.textField.Focus()
+			case TextField:
+				return m, nil
+			}
+
 		}
 	}
-	return m, nil
+	var cmd tea.Cmd
+	m.textField, cmd = m.textField.Update(msg)
+	return m, cmd
 }
 
 func (m *SelectedLogModel) View() string {
