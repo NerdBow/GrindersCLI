@@ -24,6 +24,10 @@ const (
 
 type ConfirmDeletion bool
 
+type DeletionStatusMsg struct {
+	Result bool `json:"result"`
+}
+
 type SelectedLogModel struct {
 	log           Log
 	previousModel int
@@ -120,3 +124,51 @@ func (m *SelectedLogModel) CheckTypedId(typedId string, logId int) tea.Cmd {
 	}
 }
 
+func (m *SelectedLogModel) DeleteLog(logId int) tea.Cmd {
+	return func() tea.Msg {
+		url := os.Getenv("URL")
+		url = "http://localhost:8080/user/log"
+		url = fmt.Sprintf("%s?id=%d", url, logId)
+		req, err := http.NewRequest(http.MethodDelete, url, nil)
+		req.Header.Add("Authorization", "Bearer "+m.token)
+		if err != nil {
+			return SystemErrorMsg(err.Error())
+		}
+		res, err := http.DefaultClient.Do(req)
+
+		if err != nil {
+			return SystemErrorMsg(err.Error())
+		}
+
+		switch res.StatusCode {
+		case http.StatusOK:
+			msg := DeletionStatusMsg{}
+			jsonBytes, err := io.ReadAll(res.Body)
+
+			if err != nil {
+				return SystemErrorMsg(err.Error())
+			}
+
+			err = json.Unmarshal(jsonBytes, &msg)
+
+			if err != nil {
+				return SystemErrorMsg(err.Error())
+			}
+			return msg
+		default:
+			msg := PostLogErrorMsg{}
+			jsonBytes, err := io.ReadAll(res.Body)
+
+			if err != nil {
+				return SystemErrorMsg(err.Error())
+			}
+
+			err = json.Unmarshal(jsonBytes, &msg)
+
+			if err != nil {
+				return SystemErrorMsg(err.Error())
+			}
+			return msg
+		}
+	}
+}
