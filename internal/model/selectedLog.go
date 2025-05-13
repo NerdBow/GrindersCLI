@@ -61,21 +61,33 @@ func (m *SelectedLogModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, keymap.VimBinding.Exit):
 			return m, func() tea.Msg { return ModelMsg{SelectedLog, m.previousModel, nil} }
 		case key.Matches(msg, keymap.VimBinding.ChangeFocus):
+			m.textField.Blur()
 			m.focusIndex = (m.focusIndex + 1) % len(m.choices)
 		case key.Matches(msg, keymap.VimBinding.Select):
 			switch m.focusIndex {
 			case BackField:
-				m.textField.Blur()
 				return m, func() tea.Msg { return ModelMsg{SelectedLog, m.previousModel, nil} }
 			case EditField:
-				m.textField.Blur()
 			case DeleteField:
+				m.textField.Placeholder = "Type the log id of this log in order to delete it."
+				m.focusIndex = TextField
 				return m, m.textField.Focus()
 			case TextField:
-				return m, nil
+				return m, m.CheckTypedId(m.textField.Value(), m.log.Id)
 			}
 
 		}
+	case DeletionStatusMsg:
+		m.status = fmt.Sprintf("Log %d has been deleted", m.log.Id)
+	case SystemErrorMsg:
+		m.status = string(msg)
+	case PostLogErrorMsg:
+		m.status = msg.Message
+	case ConfirmDeletion:
+		if msg {
+			return m, m.DeleteLog(m.log.Id)
+		}
+		m.status = "Invalid log id"
 	}
 	var cmd tea.Cmd
 	m.textField, cmd = m.textField.Update(msg)
