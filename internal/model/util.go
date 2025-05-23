@@ -30,17 +30,17 @@ type ModelMsg struct {
 }
 
 type Log struct {
-	Id       int    `json:"id"`
+	Id       int64  `json:"id"`
 	Name     string `json:"name"`
 	Category string `json:"category"`
 	Goal     string `json:"goal"`
-	Date     int    `json:"date"`
-	Duration int    `json:"duration"`
+	Date     int64  `json:"date"`
+	Duration int64  `json:"duration"`
 	UserId   int    `json:"userId"`
 }
 
 func (l Log) ToStringArray() []string {
-	return []string{strconv.Itoa(l.Id), l.DateString(), l.DurationString(), l.Name, l.Category, l.Goal}
+	return []string{strconv.FormatInt(l.Id, 10), l.DateString(), l.DurationString(), l.Name, l.Category, l.Goal}
 }
 
 func (l Log) DurationString() string {
