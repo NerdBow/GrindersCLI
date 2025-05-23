@@ -51,3 +51,7 @@ func (l Log) DurationString() string {
 func (l Log) DateString() string {
 	return time.Unix(int64(l.Date), 0).Format("2006-01-02")
 }
+
+func (l Log) IsEmpty() bool {
+	return (l.Id == 0 && l.Name == "" && l.Category == "" && l.Goal == "" && l.Date == 0 && l.Duration == 0 && l.UserId == 0)
+}
