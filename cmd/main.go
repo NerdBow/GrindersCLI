@@ -6,6 +6,7 @@ import (
 
 	"github.com/NerdBow/GrindersTUI/internal/model"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/joho/godotenv"
 )
 
 const (
@@ -137,6 +138,12 @@ func (m *App) View() string {
 }
 
 func main() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		fmt.Println("fatal:", err)
+		os.Exit(1)
+	}
+
 	f, err := tea.LogToFile("debug.log", "debug")
 	if err != nil {
 		fmt.Println("fatal:", err)
@@ -150,5 +157,4 @@ func main() {
 		fmt.Printf("There is an error: %v", err)
 		os.Exit(1)
 	}
-
 }
