@@ -68,6 +68,7 @@ func (m *SelectedLogModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case BackField:
 				return m, func() tea.Msg { return ModelMsg{SelectedLog, m.previousModel, nil} }
 			case EditField:
+				return m, func() tea.Msg { return ModelMsg{SelectedLog, EditLog, m.log} }
 			case DeleteField:
 				m.textField.Placeholder = "Type the log id of this log in order to delete it."
 				m.focusIndex = TextField
@@ -75,7 +76,6 @@ func (m *SelectedLogModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case TextField:
 				return m, m.CheckTypedId(m.textField.Value(), m.log.Id)
 			}
-
 		}
 	case DeletionStatusMsg:
 		m.status = fmt.Sprintf("Log %d has been deleted", m.log.Id)
