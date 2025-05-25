@@ -22,6 +22,7 @@ type App struct {
 	restTimerModel   *model.RestTimerModel
 	viewLogModel     *model.ViewLogModel
 	selectedLogModel *model.SelectedLogModel
+	editLogModel     *model.EditLogModel
 	recentLogsModel  *model.RecentLogsModel
 	token            string
 }
@@ -58,7 +59,6 @@ func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case model.SignOutMsg:
 				m.token = ""
 			}
-
 			switch msg.NextModel {
 			case model.CreateLog:
 				m.createLogModel = model.CreateLogModelInit()
@@ -107,9 +107,20 @@ func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case model.RecentLogs:
 				m.currentState = m.recentLogsModel
 				return m, m.recentLogsModel.Init()
+			case model.EditLog:
+				switch other := msg.Other.(type) {
+				case model.Log:
+					m.editLogModel = model.EditLogModelInit(other, m.token)
+				}
+				m.currentState = m.editLogModel
+				return m, m.editLogModel.Init()
 			}
 		case model.EditLog:
-		case model.DeleteLog:
+			switch msg.NextModel {
+			case model.SelectedLog:
+				m.currentState = m.selectedLogModel
+				return m, m.selectedLogModel.Init()
+			}
 		case model.Stopwatch:
 			switch msg.NextModel {
 			case model.CreateLog:
