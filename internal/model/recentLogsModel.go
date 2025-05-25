@@ -110,7 +110,7 @@ func (m *RecentLogsModel) getRecentLogs() tea.Cmd {
 	return func() tea.Msg {
 		url := os.Getenv("URL")
 
-		url = "http://localhost:8080/user/log"
+		url += "/user/log"
 
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s?order=DATE_DES&page=%d", url, m.page), nil)
 		if err != nil {

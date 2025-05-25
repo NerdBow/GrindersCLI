@@ -158,7 +158,7 @@ func (m *StopwatchModel) postLog() tea.Cmd {
 	return func() tea.Msg {
 		url := os.Getenv("URL")
 
-		url = "http://localhost:8080/user/log"
+		url += "/user/log"
 
 		log := struct {
 			Date     int64  `json:"date"`

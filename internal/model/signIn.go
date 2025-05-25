@@ -133,7 +133,7 @@ func (m *SignInModel) View() string {
 func (m *SignInModel) GetToken(username string, password string) tea.Cmd {
 	return func() tea.Msg {
 		url := os.Getenv("URL")
-		url = "http://localhost:8080/user/signin"
+		url += "/user/signin"
 		request := struct {
 			Username string `json:"username"`
 			Password string `json:"password"`
