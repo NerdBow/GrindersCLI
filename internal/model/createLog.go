@@ -1,11 +1,12 @@
 package model
 
 import (
+	"strings"
+
 	"github.com/NerdBow/GrindersTUI/internal/keymap"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"strings"
 )
 
 type EmptyFieldErrorMsg uint8

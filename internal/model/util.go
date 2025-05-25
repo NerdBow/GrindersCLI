@@ -30,17 +30,17 @@ type ModelMsg struct {
 }
 
 type Log struct {
-	Id       int    `json:"id"`
+	Id       int64  `json:"id"`
 	Name     string `json:"name"`
 	Category string `json:"category"`
 	Goal     string `json:"goal"`
-	Date     int    `json:"date"`
-	Duration int    `json:"duration"`
+	Date     int64  `json:"date"`
+	Duration int64  `json:"duration"`
 	UserId   int    `json:"userId"`
 }
 
 func (l Log) ToStringArray() []string {
-	return []string{strconv.Itoa(l.Id), l.DateString(), l.DurationString(), l.Name, l.Category, l.Goal}
+	return []string{strconv.FormatInt(l.Id, 10), l.DateString(), l.DurationString(), l.Name, l.Category, l.Goal}
 }
 
 func (l Log) DurationString() string {
@@ -50,4 +50,31 @@ func (l Log) DurationString() string {
 
 func (l Log) DateString() string {
 	return time.Unix(int64(l.Date), 0).Format("2006-01-02")
+}
+
+func (l Log) IsEmpty() bool {
+	return (l.Id == 0 && l.Name == "" && l.Category == "" && l.Goal == "" && l.Date == 0 && l.Duration == 0 && l.UserId == 0)
+}
+
+func (l Log) FillEmptyFields(other Log) Log {
+	if l.Name == "" {
+		l.Name = other.Name
+	}
+
+	if l.Category == "" {
+		l.Category = other.Category
+	}
+
+	if l.Goal == "" {
+		l.Goal = other.Goal
+	}
+
+	if l.Date == 0 {
+		l.Date = other.Date
+	}
+
+	if l.Duration == 0 {
+		l.Duration = other.Duration
+	}
+	return l
 }

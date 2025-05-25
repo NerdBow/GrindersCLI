@@ -158,7 +158,7 @@ func (m *StopwatchModel) postLog() tea.Cmd {
 	return func() tea.Msg {
 		url := os.Getenv("URL")
 
-		url = "http://localhost:8080/user/log"
+		url += "/user/log"
 
 		log := struct {
 			Date     int64  `json:"date"`
@@ -175,7 +175,6 @@ func (m *StopwatchModel) postLog() tea.Cmd {
 		}
 
 		jsonBytes, err := json.Marshal(log)
-
 		if err != nil {
 			return SystemErrorMsg(err.Error())
 		}
@@ -183,7 +182,6 @@ func (m *StopwatchModel) postLog() tea.Cmd {
 		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonBytes))
 		req.Header.Add("Authorization", "Bearer "+m.token)
 		res, err := http.DefaultClient.Do(req)
-
 		if err != nil {
 			return SystemErrorMsg(err.Error())
 		}
@@ -197,7 +195,6 @@ func (m *StopwatchModel) postLog() tea.Cmd {
 				return SystemErrorMsg(err.Error())
 			}
 			err = json.Unmarshal(jsonBytes, &msg)
-
 			if err != nil {
 				return SystemErrorMsg(err.Error())
 			}
@@ -210,7 +207,6 @@ func (m *StopwatchModel) postLog() tea.Cmd {
 
 			var errMsg PostLogErrorMsg
 			err = json.Unmarshal(jsonBytes, &errMsg)
-
 			if err != nil {
 				return SystemErrorMsg(err.Error())
 			}
