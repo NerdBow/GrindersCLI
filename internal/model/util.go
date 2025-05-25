@@ -55,3 +55,26 @@ func (l Log) DateString() string {
 func (l Log) IsEmpty() bool {
 	return (l.Id == 0 && l.Name == "" && l.Category == "" && l.Goal == "" && l.Date == 0 && l.Duration == 0 && l.UserId == 0)
 }
+
+func (l Log) FillEmptyFields(other Log) Log {
+	if l.Name == "" {
+		l.Name = other.Name
+	}
+
+	if l.Category == "" {
+		l.Category = other.Category
+	}
+
+	if l.Goal == "" {
+		l.Goal = other.Goal
+	}
+
+	if l.Date == 0 {
+		l.Date = other.Date
+	}
+
+	if l.Duration == 0 {
+		l.Duration = other.Duration
+	}
+	return l
+}
