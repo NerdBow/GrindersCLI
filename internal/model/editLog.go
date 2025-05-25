@@ -22,7 +22,31 @@ type EditStatusMsg struct {
 	Result bool `json:"result"`
 }
 
-type EditLogModel struct{}
+type EditLogModel struct {
+	log          Log
+	choices      []string
+	focusIndex   int
+	inputs       [5]textinput.Model
+	token        string
+	status       string
+	confirmCount uint8
+}
+
+func EditLogModelInit(log Log, token string) *EditLogModel {
+	var textInputs [5]textinput.Model
+	for i := range textInputs {
+		textInputs[i] = textinput.New()
+	}
+	return &EditLogModel{
+		log:          log,
+		choices:      []string{"Date", "Name", "Category", "Goal", "Duration", "Back", "Confirm"},
+		focusIndex:   0,
+		inputs:       textInputs,
+		token:        token,
+		status:       "",
+		confirmCount: 0,
+	}
+}
 
 func (m *EditLogModel) Init() tea.Cmd {
 	return nil
