@@ -61,6 +61,28 @@ func (m *EditLogModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m *EditLogModel) View() string {
 	b := strings.Builder{}
+	for i := range m.inputs {
+		b.WriteString(fmt.Sprintf("%s: %s", m.choices[i], m.inputs[i].View()))
+		b.WriteRune('\n')
+	}
+	b.WriteRune('\n')
+	if m.choices[m.focusIndex] == "Back" {
+		b.WriteString(textInputFocusedStyle.Render("Back"))
+	} else {
+		b.WriteString(textInputUnfocusedStyle.Render("Back"))
+	}
+
+	b.WriteString("    ")
+	if m.choices[m.focusIndex] == "Confirm" {
+		b.WriteString(textInputFocusedStyle.Render("Confirm"))
+	} else {
+		b.WriteString(textInputUnfocusedStyle.Render("Confirm"))
+	}
+
+	b.WriteString("    ")
+	b.WriteRune('\n')
+	b.WriteRune('\n')
+	b.WriteString(textInputFocusedStyle.Render(m.status))
 	return b.String()
 }
 
