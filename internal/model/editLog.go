@@ -56,7 +56,53 @@ func (m *EditLogModel) Init() tea.Cmd {
 }
 
 func (m *EditLogModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	return m, nil
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch {
+		case key.Matches(msg, keymap.VimBinding.Exit):
+			return m, func() tea.Msg { return ModelMsg{EditLog, SelectedLog, nil} }
+		case key.Matches(msg, keymap.VimBinding.ChangeFocus):
+			m.focusIndex = (m.focusIndex + 1) % len(m.choices)
+			for i := range m.inputs {
+				m.inputs[i].Blur()
+				m.inputs[i].PromptStyle = textInputUnfocusedStyle
+				m.inputs[i].TextStyle = textInputUnfocusedStyle
+			}
+			if m.focusIndex < len(m.inputs) {
+				m.inputs[m.focusIndex].PromptStyle = textInputFocusedStyle
+				m.inputs[m.focusIndex].TextStyle = textInputFocusedStyle
+				return m, m.inputs[m.focusIndex].Focus()
+			}
+		case key.Matches(msg, keymap.VimBinding.Select):
+			switch m.choices[m.focusIndex] {
+			case "Back":
+				return m, func() tea.Msg { return ModelMsg{EditLog, SelectedLog, nil} }
+			case "Confirm":
+				if m.confirmCount == 1 {
+					m.confirmCount = 0
+					m.status = ""
+					editLog, statusMsg := m.GetEditLog()
+					if editLog.IsEmpty() && statusMsg == "" {
+						m.status = "Please make changes first if you want to edit log"
+						return m, nil
+					}
+					if editLog.IsEmpty() && statusMsg != "" {
+						m.status = statusMsg
+						return m, nil
+					}
+					cmd := m.EditLog(editLog)
+					return m, cmd
+				}
+				m.status = "Please hit confirm again to submit edits to log"
+				m.confirmCount = 1
+			}
+		}
+	}
+	cmds := make([]tea.Cmd, len(m.inputs))
+	for i := range m.inputs {
+		m.inputs[i], cmds[i] = m.inputs[i].Update(msg)
+	}
+	return m, tea.Batch(cmds...)
 }
 
 func (m *EditLogModel) View() string {
