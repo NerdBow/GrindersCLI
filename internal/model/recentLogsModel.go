@@ -113,7 +113,6 @@ func (m *RecentLogsModel) getRecentLogs() tea.Cmd {
 		url = "http://localhost:8080/user/log"
 
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s?order=DATE_DES&page=%d", url, m.page), nil)
-
 		if err != nil {
 			return SystemErrorMsg(err.Error())
 		}
@@ -121,7 +120,6 @@ func (m *RecentLogsModel) getRecentLogs() tea.Cmd {
 		req.Header.Add("Authorization", "Bearer "+m.token)
 
 		res, err := http.DefaultClient.Do(req)
-
 		if err != nil {
 			return SystemErrorMsg(err.Error())
 		}
@@ -135,7 +133,6 @@ func (m *RecentLogsModel) getRecentLogs() tea.Cmd {
 				return SystemErrorMsg(err.Error())
 			}
 			err = json.Unmarshal(jsonBytes, &logs)
-
 			if err != nil {
 				return SystemErrorMsg(err.Error())
 			}
@@ -147,7 +144,6 @@ func (m *RecentLogsModel) getRecentLogs() tea.Cmd {
 			}
 			var errMsg PostLogErrorMsg
 			err = json.Unmarshal(jsonBytes, &errMsg)
-
 			if err != nil {
 				return SystemErrorMsg(err.Error())
 			}

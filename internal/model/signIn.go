@@ -109,7 +109,6 @@ func (m *SignInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	return m, tea.Batch(cmds...)
-
 }
 
 func (m *SignInModel) View() string {
@@ -141,13 +140,11 @@ func (m *SignInModel) GetToken(username string, password string) tea.Cmd {
 		}{username, password}
 
 		jsonBytes, err := json.Marshal(request)
-
 		if err != nil {
 			return SystemErrorMsg(err.Error())
 		}
 
 		r, err := http.Post(url, "application/json", bytes.NewBuffer(jsonBytes))
-
 		if err != nil {
 			return SystemErrorMsg(err.Error())
 		}
@@ -162,7 +159,6 @@ func (m *SignInModel) GetToken(username string, password string) tea.Cmd {
 			var msg UserTokenMsg
 
 			err = json.Unmarshal(jsonBytes, &msg)
-
 			if err != nil {
 				return SystemErrorMsg(err.Error())
 			}
@@ -182,7 +178,6 @@ func (m *SignInModel) GetToken(username string, password string) tea.Cmd {
 			var errMsg SignInErrorMsg
 
 			err = json.Unmarshal(jsonBytes, &errMsg)
-
 			if err != nil {
 				return SystemErrorMsg(err.Error())
 			}

@@ -1,10 +1,11 @@
 package model
 
 import (
+	"strings"
+
 	"github.com/NerdBow/GrindersTUI/internal/keymap"
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
-	"strings"
 )
 
 const (
@@ -51,7 +52,6 @@ func (m *ViewLogModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, keymap.VimBinding.Exit):
 			return m, func() tea.Msg { return ModelMsg{ViewLog, Home, nil} }
 		}
-
 	}
 	return m, nil
 }
