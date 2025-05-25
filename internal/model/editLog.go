@@ -7,8 +7,8 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
+	"time"
 
 	"github.com/NerdBow/GrindersTUI/internal/keymap"
 	"github.com/charmbracelet/bubbles/key"
@@ -93,6 +93,59 @@ func (m *EditLogModel) SyncTextInputs() {
 	m.inputs[3].SetValue(m.log.Goal)
 	m.inputs[4].SetValue(m.log.DurationString())
 }
+
+// GetEditLog takes the changed values of the textinputs and creates a logs of them.
+// If any error occurs then a non-empty string will be returned.
+func (m *EditLogModel) GetEditLog() (Log, string) {
+	changed := false
+	l := Log{}
+	l.Id = m.log.Id
+
+	if m.log.Name != m.inputs[1].Value() {
+		l.Name = m.inputs[1].Value()
+		changed = true
+	}
+
+	if m.log.Category != m.inputs[2].Value() {
+		l.Category = m.inputs[2].Value()
+		changed = true
+	}
+
+	if m.log.Goal != m.inputs[3].Value() {
+		l.Goal = m.inputs[3].Value()
+		changed = true
+	}
+
+	if m.log.DateString() != m.inputs[0].Value() {
+		t, err := time.ParseInLocation(time.DateOnly, m.inputs[0].Value(), time.Now().Local().Location())
+		if err != nil {
+			return Log{}, "Please format your date as YYYY-MM-DD"
+		}
+		l.Date = t.Unix()
+		changed = true
+	}
+
+	if m.log.DurationString() != m.inputs[4].Value() {
+		unitDurations := strings.Split(m.inputs[4].Value(), ":")
+		if len(unitDurations) != 3 {
+			return Log{}, "Please format your duration as HH:MM:SS"
+		}
+		d, err := time.ParseDuration(fmt.Sprintf("%sh%sm%ss", unitDurations[0], unitDurations[1], unitDurations[2]))
+		if err != nil {
+			return Log{}, "Please format your duration as HH:MM:SS"
+		}
+		l.Duration = int64(d.Seconds())
+		changed = true
+	}
+
+	if !changed {
+		return Log{}, ""
+	}
+
+	return l, ""
+}
+
+func (m *EditLogModel) EditLog(editLog Log) tea.Cmd {
 	return func() tea.Msg {
 		url := os.Getenv("URL")
 		url += "/user/log"
