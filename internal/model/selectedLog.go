@@ -124,9 +124,9 @@ func (m *SelectedLogModel) View() string {
 	return b.String()
 }
 
-func (m *SelectedLogModel) CheckTypedId(typedId string, logId int) tea.Cmd {
+func (m *SelectedLogModel) CheckTypedId(typedId string, logId int64) tea.Cmd {
 	return func() tea.Msg {
-		id, err := strconv.Atoi(typedId)
+		id, err := strconv.ParseInt(typedId, 10, 64)
 		if err != nil {
 			return ConfirmDeletion(false)
 		}
@@ -137,10 +137,10 @@ func (m *SelectedLogModel) CheckTypedId(typedId string, logId int) tea.Cmd {
 	}
 }
 
-func (m *SelectedLogModel) DeleteLog(logId int) tea.Cmd {
+func (m *SelectedLogModel) DeleteLog(logId int64) tea.Cmd {
 	return func() tea.Msg {
 		url := os.Getenv("URL")
-		url = "http://localhost:8080/user/log"
+		url += "/user/log"
 		url = fmt.Sprintf("%s?id=%d", url, logId)
 		req, err := http.NewRequest(http.MethodDelete, url, nil)
 		req.Header.Add("Authorization", "Bearer "+m.token)
@@ -148,7 +148,6 @@ func (m *SelectedLogModel) DeleteLog(logId int) tea.Cmd {
 			return SystemErrorMsg(err.Error())
 		}
 		res, err := http.DefaultClient.Do(req)
-
 		if err != nil {
 			return SystemErrorMsg(err.Error())
 		}
@@ -157,13 +156,11 @@ func (m *SelectedLogModel) DeleteLog(logId int) tea.Cmd {
 		case http.StatusOK:
 			msg := DeletionStatusMsg{}
 			jsonBytes, err := io.ReadAll(res.Body)
-
 			if err != nil {
 				return SystemErrorMsg(err.Error())
 			}
 
 			err = json.Unmarshal(jsonBytes, &msg)
-
 			if err != nil {
 				return SystemErrorMsg(err.Error())
 			}
@@ -171,13 +168,11 @@ func (m *SelectedLogModel) DeleteLog(logId int) tea.Cmd {
 		default:
 			msg := PostLogErrorMsg{}
 			jsonBytes, err := io.ReadAll(res.Body)
-
 			if err != nil {
 				return SystemErrorMsg(err.Error())
 			}
 
 			err = json.Unmarshal(jsonBytes, &msg)
-
 			if err != nil {
 				return SystemErrorMsg(err.Error())
 			}
