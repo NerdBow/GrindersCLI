@@ -49,6 +49,9 @@ func EditLogModelInit(log Log, token string) *EditLogModel {
 }
 
 func (m *EditLogModel) Init() tea.Cmd {
+	m.inputs[0].PromptStyle = textInputFocusedStyle
+	m.inputs[0].TextStyle = textInputFocusedStyle
+	m.SyncTextInputs()
 	return nil
 }
 
