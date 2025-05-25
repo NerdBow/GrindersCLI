@@ -60,7 +60,7 @@ func (m *EditLogModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, keymap.VimBinding.Exit):
-			return m, func() tea.Msg { return ModelMsg{EditLog, SelectedLog, nil} }
+			return m, func() tea.Msg { return ModelMsg{EditLog, SelectedLog, m.log} }
 		case key.Matches(msg, keymap.VimBinding.ChangeFocus):
 			m.focusIndex = (m.focusIndex + 1) % len(m.choices)
 			for i := range m.inputs {
@@ -76,7 +76,7 @@ func (m *EditLogModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, keymap.VimBinding.Select):
 			switch m.choices[m.focusIndex] {
 			case "Back":
-				return m, func() tea.Msg { return ModelMsg{EditLog, SelectedLog, nil} }
+				return m, func() tea.Msg { return ModelMsg{EditLog, SelectedLog, m.log} }
 			case "Confirm":
 				if m.confirmCount == 1 {
 					m.confirmCount = 0
@@ -97,6 +97,11 @@ func (m *EditLogModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.confirmCount = 1
 			}
 		}
+	case EditStatusMsg:
+		l, _ := m.GetEditLog()
+		m.log = l.FillEmptyFields(m.log)
+		m.SyncTextInputs()
+		m.status = fmt.Sprintf("Log %d has been edited", m.log.Id)
 	}
 	cmds := make([]tea.Cmd, len(m.inputs))
 	for i := range m.inputs {
