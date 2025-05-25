@@ -86,7 +86,13 @@ func (m *EditLogModel) View() string {
 	return b.String()
 }
 
-func (m *EditLogModel) EditLog(logId int, editLog Log) tea.Cmd {
+func (m *EditLogModel) SyncTextInputs() {
+	m.inputs[0].SetValue(m.log.DateString())
+	m.inputs[1].SetValue(m.log.Name)
+	m.inputs[2].SetValue(m.log.Category)
+	m.inputs[3].SetValue(m.log.Goal)
+	m.inputs[4].SetValue(m.log.DurationString())
+}
 	return func() tea.Msg {
 		url := os.Getenv("URL")
 		url += "/user/log"
