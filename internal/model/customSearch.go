@@ -12,7 +12,35 @@ import (
 )
 
 type CustomSearchModel struct {
-	focusIndex int
+	focusIndexRow int
+	focusIndexCol int
+	inputs        []textinput.Model
+	choices       [][]string
+}
+
+func CustomSearchModelInit() *CustomSearchModel {
+	textInputs := make([]textinput.Model, 3)
+	textInputs[0] = textinput.New()
+	textInputs[0].Placeholder = "Category"
+	textInputs[0].TextStyle = textInputFocusedStyle
+	textInputs[0].PromptStyle = textInputFocusedStyle
+
+	textInputs[1] = textinput.New()
+	textInputs[1].Placeholder = "Date Start"
+	textInputs[1].TextStyle = textInputUnfocusedStyle
+	textInputs[1].PromptStyle = textInputUnfocusedStyle
+
+	textInputs[2] = textinput.New()
+	textInputs[2].Placeholder = "Date End"
+	textInputs[2].TextStyle = textInputUnfocusedStyle
+	textInputs[2].PromptStyle = textInputUnfocusedStyle
+
+	return &CustomSearchModel{
+		focusIndexRow: 0,
+		focusIndexCol: 0,
+		inputs:        textInputs,
+		choices:       [][]string{{"Date", "Duration"}, {"Descending", "Ascending"}},
+	}
 }
 
 func (m *CustomSearchModel) Init() tea.Cmd {
