@@ -29,6 +29,13 @@ type ModelMsg struct {
 	Other        tea.Msg
 }
 
+type GetLogsSettingsMsg struct {
+	Category  string
+	Order     string
+	DateStart int64
+	DateEnd   int64
+}
+
 type Log struct {
 	Id       int64  `json:"id"`
 	Name     string `json:"name"`
