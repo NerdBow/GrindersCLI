@@ -14,17 +14,18 @@ const (
 )
 
 type App struct {
-	currentState     tea.Model
-	homeModel        *model.HomeModel
-	signInModel      *model.SignInModel
-	createLogModel   *model.CreateLogModel
-	stopwatchModel   *model.StopwatchModel
-	restTimerModel   *model.RestTimerModel
-	viewLogModel     *model.ViewLogModel
-	selectedLogModel *model.SelectedLogModel
-	editLogModel     *model.EditLogModel
-	recentLogsModel  *model.RecentLogsModel
-	token            string
+	currentState      tea.Model
+	homeModel         *model.HomeModel
+	signInModel       *model.SignInModel
+	createLogModel    *model.CreateLogModel
+	stopwatchModel    *model.StopwatchModel
+	restTimerModel    *model.RestTimerModel
+	viewLogModel      *model.ViewLogModel
+	selectedLogModel  *model.SelectedLogModel
+	editLogModel      *model.EditLogModel
+	recentLogsModel   *model.RecentLogsModel
+	customSearchModel *model.CustomSearchModel
+	token             string
 }
 
 func initApp() *App {
@@ -90,6 +91,15 @@ func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.recentLogsModel = model.RecentLogsModelInit(m.token)
 				m.currentState = m.recentLogsModel
 				return m, m.recentLogsModel.Init()
+			case model.CustomLogSearch:
+				m.customSearchModel = model.CustomSearchModelInit()
+				m.currentState = m.customSearchModel
+				return m, m.currentState.Init()
+			}
+		case model.CustomLogSearch:
+			switch msg.NextModel {
+			case model.ViewLog:
+				m.currentState = m.viewLogModel
 			}
 		case model.RecentLogs:
 			switch msg.NextModel {
