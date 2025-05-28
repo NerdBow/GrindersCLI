@@ -51,7 +51,47 @@ func (m *CustomSearchModel) Init() tea.Cmd {
 }
 
 func (m *CustomSearchModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	return m, nil
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch {
+		case key.Matches(msg, keymap.VimBinding.Exit):
+			return m, func() tea.Msg { return ModelMsg{CustomLogSearch, ViewLog, nil} }
+		case key.Matches(msg, keymap.VimBinding.ChangeFocus):
+			m.focusIndexRow = (m.focusIndexRow + 1) % (len(m.inputs) + len(m.choices))
+			for i := range m.inputs {
+				m.inputs[i].Blur()
+				m.inputs[i].TextStyle = textInputUnfocusedStyle
+				m.inputs[i].PromptStyle = textInputUnfocusedStyle
+			}
+			if m.focusIndexRow < len(m.inputs) {
+				m.inputs[m.focusIndexRow].PromptStyle = textInputFocusedStyle
+				m.inputs[m.focusIndexRow].TextStyle = textInputFocusedStyle
+				return m, m.inputs[m.focusIndexRow].Focus()
+			}
+			if m.focusIndexRow >= len(m.inputs) {
+				m.focusIndexCol = m.orderSettings[m.focusIndexRow-len(m.inputs)]
+			}
+		case key.Matches(msg, keymap.VimBinding.Right):
+			if m.focusIndexRow < len(m.inputs) {
+				break
+			}
+			m.focusIndexCol = (m.focusIndexCol + 1) % (len(m.choices[0]))
+			m.orderSettings[m.focusIndexRow-len(m.inputs)] = m.focusIndexCol
+		case key.Matches(msg, keymap.VimBinding.Left):
+			if m.focusIndexRow < len(m.inputs) {
+				break
+			}
+			m.focusIndexCol = (len(m.choices[0]) + m.focusIndexCol - 1) % (len(m.choices[0]))
+			m.orderSettings[m.focusIndexRow-len(m.inputs)] = m.focusIndexCol
+		}
+	}
+	cmds := make([]tea.Cmd, len(m.inputs))
+	for i := range m.inputs {
+		m.inputs[i], cmds[i] = m.inputs[i].Update(msg)
+	}
+	return m, tea.Batch(cmds...)
+}
+
 }
 
 func (m *CustomSearchModel) View() string {
