@@ -47,7 +47,7 @@ func CustomSearchModelInit() *CustomSearchModel {
 }
 
 func (m *CustomSearchModel) Init() tea.Cmd {
-	return nil
+	return tea.Batch(textinput.Blink, m.inputs[0].Focus())
 }
 
 func (m *CustomSearchModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
