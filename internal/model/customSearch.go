@@ -8,14 +8,15 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 )
 
 type CustomSearchModel struct {
 	focusIndexRow int
 	focusIndexCol int
+	orderSettings []int
 	inputs        []textinput.Model
 	choices       [][]string
+	querySettings GetLogsSettingsMsg
 }
 
 func CustomSearchModelInit() *CustomSearchModel {
@@ -38,8 +39,10 @@ func CustomSearchModelInit() *CustomSearchModel {
 	return &CustomSearchModel{
 		focusIndexRow: 0,
 		focusIndexCol: 0,
+		orderSettings: []int{0, 0},
 		inputs:        textInputs,
 		choices:       [][]string{{"Date", "Duration"}, {"Descending", "Ascending"}},
+		querySettings: GetLogsSettingsMsg{},
 	}
 }
 
