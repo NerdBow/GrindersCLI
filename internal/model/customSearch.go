@@ -17,6 +17,7 @@ type CustomSearchModel struct {
 	inputs        []textinput.Model
 	choices       [][]string
 	querySettings GetLogsSettingsMsg
+	status        string
 }
 
 func CustomSearchModelInit() *CustomSearchModel {
@@ -43,6 +44,7 @@ func CustomSearchModelInit() *CustomSearchModel {
 		inputs:        textInputs,
 		choices:       [][]string{{"Date", "Duration"}, {"Descending", "Ascending"}},
 		querySettings: GetLogsSettingsMsg{},
+		status:        "",
 	}
 }
 
@@ -116,6 +118,7 @@ func (m *CustomSearchModel) View() string {
 		}
 		b.WriteByte('\n')
 	}
-	b.WriteString(fmt.Sprintf("Row: %d Col: %d ", m.focusIndexRow, m.focusIndexCol))
+	b.WriteByte('\n')
+	b.WriteString(textInputFocusedStyle.Render(m.status))
 	return b.String()
 }
