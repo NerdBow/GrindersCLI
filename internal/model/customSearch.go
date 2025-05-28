@@ -1,8 +1,10 @@
 package model
 
 import (
+	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/NerdBow/GrindersTUI/internal/keymap"
 	"github.com/charmbracelet/bubbles/key"
@@ -94,6 +96,28 @@ func (m *CustomSearchModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
+func (m *CustomSearchModel) writeSettings() error {
+	m.querySettings.Category = m.inputs[0].Value()
+
+	if m.inputs[1].Value() != "" {
+		dateStart, err := time.ParseInLocation(time.DateOnly, m.inputs[1].Value(), time.Now().Local().Location())
+		if err != nil {
+			return errors.New("Please input dates as YYYY-MM-DD")
+		}
+		m.querySettings.DateStart = dateStart.Unix()
+	}
+	if m.inputs[2].Value() != "" {
+		dateEnd, err := time.ParseInLocation(time.DateOnly, m.inputs[2].Value(), time.Now().Local().Location())
+		if err != nil {
+			return errors.New("Please input dates as YYYY-MM-DD")
+		}
+		dateEnd = dateEnd.Add(time.Hour * 24)
+		m.querySettings.DateEnd = dateEnd.Unix()
+	}
+	mapping := []string{"des", "asc"}
+
+	m.querySettings.Order = fmt.Sprintf("%s_%s", m.choices[0][m.orderSettings[0]], mapping[m.orderSettings[1]])
+	return nil
 }
 
 func (m *CustomSearchModel) View() string {
