@@ -96,5 +96,26 @@ func (m *CustomSearchModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m *CustomSearchModel) View() string {
 	b := strings.Builder{}
+	for i := range m.inputs {
+		b.WriteString(m.inputs[i].View())
+		b.WriteByte('\n')
+	}
+	for i := range m.choices {
+		if i == m.focusIndexRow-len(m.inputs) {
+			b.WriteString(textInputFocusedStyle.Render("> "))
+		} else {
+			b.WriteString(textInputUnfocusedStyle.Render("> "))
+		}
+		for j := range m.choices[0] {
+			if j == m.orderSettings[i] {
+				b.WriteString(textInputFocusedStyle.Render(m.choices[i][j]))
+			} else {
+				b.WriteString(textInputUnfocusedStyle.Render(m.choices[i][j]))
+			}
+			b.WriteString("    ")
+		}
+		b.WriteByte('\n')
+	}
+	b.WriteString(fmt.Sprintf("Row: %d Col: %d ", m.focusIndexRow, m.focusIndexCol))
 	return b.String()
 }
