@@ -163,10 +163,12 @@ func (m *App) View() string {
 }
 
 func main() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		fmt.Println("fatal:", err)
-		os.Exit(1)
+	if os.Getenv("URL") == "" {
+		err := godotenv.Load(".env")
+		if err != nil {
+			fmt.Println("fatal:", err)
+			os.Exit(1)
+		}
 	}
 
 	f, err := tea.LogToFile("debug.log", "debug")
