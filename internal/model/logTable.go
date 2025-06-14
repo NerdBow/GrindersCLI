@@ -29,7 +29,7 @@ var baseStyle = lipgloss.NewStyle().
 	BorderStyle(lipgloss.NormalBorder()).
 	BorderForeground(lipgloss.Color("240"))
 
-type RecentLogsModel struct {
+type LogTableModel struct {
 	token    string
 	page     int
 	logTable table.Model
@@ -37,7 +37,7 @@ type RecentLogsModel struct {
 	logs     []Log
 }
 
-func RecentLogsModelInit(token string) *RecentLogsModel {
+func LogTableModelInit(token string) *LogTableModel {
 	columns := []table.Column{
 		{Title: "Id", Width: IdWidth},
 		{Title: "Date", Width: DateWidth},
@@ -46,26 +46,26 @@ func RecentLogsModelInit(token string) *RecentLogsModel {
 		{Title: "Category", Width: CategoryWidth},
 		{Title: "Goal", Width: GoalWidth},
 	}
-	return &RecentLogsModel{
+	return &LogTableModel{
 		token:    token,
 		page:     1,
 		logTable: table.New(table.WithColumns(columns)),
 	}
 }
 
-func (m *RecentLogsModel) Init() tea.Cmd {
+func (m *LogTableModel) Init() tea.Cmd {
 	m.logTable.SetHeight(20)
 	return m.getRecentLogs()
 }
 
-func (m *RecentLogsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *LogTableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, keymap.VimBinding.Exit):
-			return m, func() tea.Msg { return ModelMsg{RecentLogs, ViewLog, nil} }
+			return m, func() tea.Msg { return ModelMsg{LogTable, ViewLog, nil} }
 		case key.Matches(msg, keymap.VimBinding.Select):
-			return m, func() tea.Msg { return ModelMsg{RecentLogs, SelectedLog, m.logs[m.logTable.Cursor()]} }
+			return m, func() tea.Msg { return ModelMsg{LogTable, SelectedLog, m.logs[m.logTable.Cursor()]} }
 		case key.Matches(msg, keymap.VimBinding.Up):
 			m.logTable.MoveUp(1)
 			return m, nil
@@ -98,7 +98,7 @@ func (m *RecentLogsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m *RecentLogsModel) View() string {
+func (m *LogTableModel) View() string {
 	b := strings.Builder{}
 	b.WriteString(baseStyle.Render(m.logTable.View()))
 	b.WriteRune('\n')
@@ -106,7 +106,7 @@ func (m *RecentLogsModel) View() string {
 	return b.String()
 }
 
-func (m *RecentLogsModel) getRecentLogs() tea.Cmd {
+func (m *LogTableModel) getRecentLogs() tea.Cmd {
 	return func() tea.Msg {
 		url := os.Getenv("URL")
 

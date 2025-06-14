@@ -17,7 +17,7 @@ const (
 	DeleteLog
 	Stopwatch
 	RestTimer
-	RecentLogs
+	LogTable
 	SelectedLog
 	IdLogSearch
 	CustomLogSearch

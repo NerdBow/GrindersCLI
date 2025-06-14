@@ -37,7 +37,7 @@ func (m *ViewLogModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, keymap.VimBinding.Select):
 			switch m.focusIndex {
 			case RecentLogsField:
-				return m, func() tea.Msg { return ModelMsg{ViewLog, RecentLogs, nil} }
+				return m, func() tea.Msg { return ModelMsg{ViewLog, LogTable, nil} }
 			case IdSearchField:
 				return m, func() tea.Msg { return ModelMsg{ViewLog, IdLogSearch, nil} }
 			case CustomSearchField:

@@ -66,7 +66,7 @@ func (m *CustomSearchModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.status = err.Error()
 				return m, nil
 			}
-			return m, func() tea.Msg { return ModelMsg{CustomLogSearch, RecentLogs, m.querySettings} }
+			return m, func() tea.Msg { return ModelMsg{CustomLogSearch, LogTable, m.querySettings} }
 		case key.Matches(msg, keymap.VimBinding.ChangeFocus):
 			m.focusIndexRow = (m.focusIndexRow + 1) % (len(m.inputs) + len(m.choices))
 			for i := range m.inputs {

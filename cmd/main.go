@@ -23,7 +23,7 @@ type App struct {
 	viewLogModel      *model.ViewLogModel
 	selectedLogModel  *model.SelectedLogModel
 	editLogModel      *model.EditLogModel
-	recentLogsModel   *model.RecentLogsModel
+	logTableModel     *model.LogTableModel
 	customSearchModel *model.CustomSearchModel
 	token             string
 }
@@ -87,10 +87,10 @@ func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case model.Home:
 				m.homeModel = model.HomeModelInit()
 				m.currentState = m.homeModel
-			case model.RecentLogs:
-				m.recentLogsModel = model.RecentLogsModelInit(m.token)
-				m.currentState = m.recentLogsModel
-				return m, m.recentLogsModel.Init()
+			case model.LogTable:
+				m.logTableModel = model.LogTableModelInit(m.token)
+				m.currentState = m.logTableModel
+				return m, m.logTableModel.Init()
 			case model.CustomLogSearch:
 				m.customSearchModel = model.CustomSearchModelInit()
 				m.currentState = m.customSearchModel
@@ -101,22 +101,22 @@ func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case model.ViewLog:
 				m.currentState = m.viewLogModel
 			}
-		case model.RecentLogs:
+		case model.LogTable:
 			switch msg.NextModel {
 			case model.ViewLog:
 				m.currentState = m.viewLogModel
 			case model.SelectedLog:
 				switch other := msg.Other.(type) {
 				case model.Log:
-					m.selectedLogModel = model.SelectedLogModelInit(other, model.RecentLogs, m.token)
+					m.selectedLogModel = model.SelectedLogModelInit(other, model.LogTable, m.token)
 				}
 				m.currentState = m.selectedLogModel
 			}
 		case model.SelectedLog:
 			switch msg.NextModel {
-			case model.RecentLogs:
-				m.currentState = m.recentLogsModel
-				return m, m.recentLogsModel.Init()
+			case model.LogTable:
+				m.currentState = m.logTableModel
+				return m, m.logTableModel.Init()
 			case model.EditLog:
 				switch other := msg.Other.(type) {
 				case model.Log:
@@ -130,7 +130,7 @@ func (m *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case model.SelectedLog:
 				switch other := msg.Other.(type) {
 				case model.Log:
-					m.selectedLogModel = model.SelectedLogModelInit(other, model.RecentLogs, m.token)
+					m.selectedLogModel = model.SelectedLogModelInit(other, model.LogTable, m.token)
 				}
 				m.currentState = m.selectedLogModel
 				return m, m.selectedLogModel.Init()
